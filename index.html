@@ -2,15 +2,14 @@
 <html>
 <head>
   <meta name="generator" content=
-  "HTML Tidy for HTML5 for Mac OS X version 5.1.25">
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
   <title>Feature Policy</title>
   <meta charset='utf-8'>
-  <meta http-equiv="refresh" content="0; url=https://docs.google.com/document/d/1k0Ua-ZWlM_PsFCFdLMa8kaVTo32PeNZ4G7FFHqpFx4E/edit">
-  <script src='https://www.w3.org/Tools/respec/respec-w3c-common' async class=
-  'remove'>
-  </script>
-  <script class='remove'>
-  var respecConfig = {
+  <script src='https://www.w3.org/Tools/respec/respec-w3c-common'
+  async="" class='remove' type="text/javascript">
+</script>
+  <script class='remove' type="text/javascript">
+var respecConfig = {
     shortName: "feature-policy",
     specStatus: "CG-DRAFT",
     useExperimentalStyles: true,
@@ -67,8 +66,8 @@
     }
   };
   </script>
-  <style>
-    table {
+  <style type="text/css">
+  table {
       border-collapse: collapse;
       border-style: hidden hidden none hidden;
     }
@@ -86,111 +85,138 @@
 </head>
 <body>
   <section id='abstract'>
-    <p>This specification defines a mechanism that allows developers to
-    selectively enable and disable use of various browser features and
-    APIs.</p>
+    <p>This specification defines a mechanism that allows
+    developers to selectively enable and disable use of various
+    browser features and APIs.</p>
   </section>
   <section id='sotd'>
-    <p class='warning'><strong>This document is outdated</strong>.
-    Please refer to the <a href="https://docs.google.com/document/d/1k0Ua-ZWlM_PsFCFdLMa8kaVTo32PeNZ4G7FFHqpFx4E/edit">explainer</a>.</p>
+    <p>This is a <strong>work in progress</strong> and may change
+    without any notices.</p>
   </section>
   <section>
     <h2>Introduction</h2>
-    <p>The web-platform provides an ever-expanding set of features and APIs,
-    offering richer functionality, better developer ergonomics, and improved
-    performance. However, a missing piece is the ability for the developer to
-    selectively enable, disable, or modify the behavior of some of these
-    browser features and APIs within their application:</p>
+    <p>The web-platform provides an ever-expanding set of features
+    and APIs, offering richer functionality, better developer
+    ergonomics, and improved performance. However, a missing piece
+    is the ability for the developer to selectively enable,
+    disable, or modify the behavior of some of these browser
+    features and APIs within their application:</p>
     <ol>
-      <li>The developer may want to selectively _disable_ access to certain
-      browser features and APIs to "lock down" their application, as a security
-      or performance precaution, to prevent own and third-party content
-      executing within their application from introducing unwanted or
-      unexpected behaviors within their application.</li>
-      <li>The developer may want to selectively _enable_ access to certain
-      browser features and APIs which may be disabled by default - e.g. some
-      features may be disabled by default in embedded context unless explicitly
-      enabled; some features may be subject to other policy requirements.</li>
-      <li>The developer may want to use the policy to assert a promise to a
-      client or an embedder about the use—or lack of thereof—of certain
-      features and APIs. For example, to enable certain types of "fast path"
-      optimizations in the browser, or to assert a promise about conformance
-      with some requirements set by other embedders - e.g. various social
-      networks, search engines, and so on.</li>
+      <li>The developer may want to selectively _disable_ access to
+      certain browser features and APIs to "lock down" their
+      application, as a security or performance precaution, to
+      prevent own and third-party content executing within their
+      application from introducing unwanted or unexpected behaviors
+      within their application.</li>
+      <li>The developer may want to selectively _enable_ access to
+      certain browser features and APIs which may be disabled by
+      default - e.g. some features may be disabled by default in
+      embedded context unless explicitly enabled; some features may
+      be subject to other policy requirements.</li>
+      <li>The developer may want to use the policy to assert a
+      promise to a client or an embedder about the
+      use&mdash;or lack of thereof&mdash;of certain features and APIs. For
+      example, to enable certain types of "fast path" optimizations
+      in the browser, or to assert a promise about conformance with
+      some requirements set by other embedders - e.g. various
+      social networks, search engines, and so on.</li>
     </ol>
-    <p>This specification defines a feature policy mechanism that addresses the
-    above use cases.</p>
+    <p>This specification defines a feature policy mechanism that
+    addresses the above use cases.</p>
     <section>
       <h2>Examples</h2>
       <div class="example">
-        <p>SecureCorp Inc. wants to disable use of WebRTC and Geolocation APIs
-        within their application. It can do so by delivering the following HTTP
-        response header to define a feature policy:</p>
-        <pre><a>Feature-Policy</a>: {"<a data-lt=
-        "disable member">disable</a>":["<a>webrtc</a>","<a>geolocation</a>"]}</pre>
-        <p>Unless specified otherwise, the default <a>target</a> is "`\*`",
-        which means that the specified features will be disabled for all
-        browsing contexts regardless of their origin.</p>
+        <p>SecureCorp Inc. wants to disable use of WebRTC and
+        Geolocation APIs within their application. It can do so by
+        delivering the following HTTP response header to define a
+        feature policy:</p>
+        <pre>
+<a>Feature-Policy</a>: {"<a data-lt=
+"disable member">disable</a>":["<a>webrtc</a>","<a>geolocation</a>"]}
+</pre>
+        <p>Unless specified otherwise, the default <a>target</a> is
+        "`\*`", which means that the specified features will be
+        disabled for all browsing contexts regardless of their
+        origin.</p>
       </div>
       <div class="example">
-        <p>SecureCorp Inc. wants to disable use of Geolocation API within all
-        browsing contexts whose origin is "`https://example.com`". It can do so
-        by delivering the following HTTP response header to define a feature
+        <p>SecureCorp Inc. wants to disable use of Geolocation API
+        within all browsing contexts whose origin is
+        "`https://example.com`". It can do so by delivering the
+        following HTTP response header to define a feature
         policy:</p>
-        <pre><a>Feature-Policy</a>: {"<a data-lt=
-        "disable member">disable</a>":["<a>geolocation</a>"], "<a data-lt=
-        "target member">target</a>":["https://example.com"]}</pre>
-        <p>The <a>target</a> is a list of one or more origins, which can
-        include the applications origin and any third-party origin.</p>
+        <pre>
+<a>Feature-Policy</a>: {"<a data-lt=
+"disable member">disable</a>":["<a>geolocation</a>"], "<a data-lt=
+"target member">target</a>":["https://example.com"]}
+</pre>
+        <p>The <a>target</a> is a list of one or more origins,
+        which can include the applications origin and any
+        third-party origin.</p>
       </div>
       <div class="example">
-        <p>SecureCorp Inc. is hosting an application on "`https://example.com`"
-        and wants to disable WebRTC on its origin but enable it for a
-        whitelisted embedee ("`https://other.com`"). It can do so by delivering
-        the following HTTP response header to define a feature policy:</p>
-        <pre><a>Feature-Policy</a>: {"<a data-lt=
-        "disable member">disable</a>":["<a>webrtc</a>"], "<a data-lt=
-        "target member">target</a>":["https://example.com"]},
+        <p>SecureCorp Inc. is hosting an application on
+        "`https://example.com`" and wants to disable WebRTC on its
+        origin but enable it for a whitelisted embedee
+        ("`https://other.com`"). It can do so by delivering the
+        following HTTP response header to define a feature
+        policy:</p>
+        <pre>
+<a>Feature-Policy</a>: {"<a data-lt=
+"disable member">disable</a>":["<a>webrtc</a>"], "<a data-lt=
+"target member">target</a>":["https://example.com"]},
         {"<a data-lt=
-"enable member">enable</a>":["<a>webrtc</a>"], "<a data-lt="target member">target</a>":["https://other.com"]}</pre>
-        <p>Some features are disabled by default in embedded contexts. The
-        enable policy allows the application to selectively enable such
-        features for whitelisted origins.</p>
+"enable member">enable</a>":["<a>webrtc</a>"], "<a data-lt=
+"target member">target</a>":["https://other.com"]}
+</pre>
+        <p>Some features are disabled by default in embedded
+        contexts. The enable policy allows the application to
+        selectively enable such features for whitelisted
+        origins.</p>
       </div>
       <div class="example">
-        <p>FastCorp Inc. wants to disable use of synchronous `script` elements,
-        synchronous `XMLHttpRequest`'s and use of `document.write` within their
-        application. It can do so by delivering the following HTTP response
-        header to define a feature policy:</p>
-        <pre><a>Feature-Policy</a>: {"<a data-lt=
-        "disable member">disable</a>":["<a>sync-xhr</a>","<a>sync-script</a>","<a>docwrite</a>"]}</pre>
+        <p>FastCorp Inc. wants to disable use of synchronous
+        `script` elements, synchronous `XMLHttpRequest`'s and use
+        of `document.write` within their application. It can do so
+        by delivering the following HTTP response header to define
+        a feature policy:</p>
+        <pre>
+<a>Feature-Policy</a>: {"<a data-lt=
+"disable member">disable</a>":["<a>sync-xhr</a>","<a>sync-script</a>","<a>docwrite</a>"]}
+</pre>
       </div>
     </section>
     <section>
       <h2>Other and related mechanisms</h2>
-      <p>[[HTML5]] defines a [sandbox attribute] for `iframe` elements that
-      allows developers to reduce the risk of including potentially untrusted
-      content by imposing restrictions on content's abilities - e.g. prevent it
-      from submitting forms, running scripts and plugins, and more. The
-      [sandbox directive] defined by [[CSP2]] extends this capability to any
-      resource, framed or not, to ask for the same set of restrictions - e.g.
-      via an HTTP response header (`Content-Security-Policy: sandbox`). These
-      mechanisms enable the developer to:</p>
+      <p>[[HTML5]] defines a [sandbox attribute] for `iframe`
+      elements that allows developers to reduce the risk of
+      including potentially untrusted content by imposing
+      restrictions on content's abilities - e.g. prevent it from
+      submitting forms, running scripts and plugins, and more. The
+      [sandbox directive] defined by [[CSP2]] extends this
+      capability to any resource, framed or not, to ask for the
+      same set of restrictions - e.g. via an HTTP response header
+      (`Content-Security-Policy: sandbox`). These mechanisms enable
+      the developer to:</p>
       <ul>
-        <li>Set and customize a sandbox policy on any resource via CSP.</li>
-        <li>Set and customize individual sandbox policies on each `iframe`
-        element within their application.</li>
+        <li>Set and customize a sandbox policy on any resource via
+        CSP.</li>
+        <li>Set and customize individual sandbox policies on each
+        `iframe` element within their application.</li>
       </ul>
-      <p>However, there are several limitations to the above mechanism: the
-      developer cannot automatically apply a policy across all contexts, which
-      makes it hard or impossible to enforce consistently in some cases (e.g.
-      due to third-party content injecting frames, which the developer does not
-      control); there is no mechanism to selectively enable features that may
-      be off by default; the sandbox mechanism uses a whitelist approach which
-      is impossible to extend without compatibility risk.</p>
-      <p>Feature Policy is intended to be used in combination with the sandbox
-      mechanism (i.e. it does not duplicate feature controls already covered by
-      sandbox), and provides an extensible mechanism that addresses the above
+      <p>However, there are several limitations to the above
+      mechanism: the developer cannot automatically apply a policy
+      across all contexts, which makes it hard or impossible to
+      enforce consistently in some cases (e.g. due to third-party
+      content injecting frames, which the developer does not
+      control); there is no mechanism to selectively enable
+      features that may be off by default; the sandbox mechanism
+      uses a whitelist approach which is impossible to extend
+      without compatibility risk.</p>
+      <p>Feature Policy is intended to be used in combination with
+      the sandbox mechanism (i.e. it does not duplicate feature
+      controls already covered by sandbox), and provides an
+      extensible mechanism that addresses the above
       limitations.</p>
     </section>
   </section>
@@ -198,487 +224,552 @@
     <h2>Framework</h2>
     <section>
       <h2>Policies</h2>
-      <p>A <dfn>feature policy</dfn> may be applied to a [Window] or
-      [WorkerGlobalScope] and consists of:</p>
+      <p>A <dfn>feature policy</dfn> may be applied to a [Document]
+      or [WorkerGlobalScope] and consists of:</p>
       <ul>
-        <li>A set of <a data-lt="directive">directives</a>.
-        </li>
+        <li>A set of <a data-lt="inherited features">inherited
+        features</a>.</li>
+        <li>A set of <a data-lt="declared policy">declared
+        policies</a>.</li>
       </ul>
     </section>
     <section>
-      <h2>Directives</h2>
-      <p>Each <dfn>directive</dfn> is a tuple consisting of:</p>
-      <ul>
-        <li>A <dfn>target</dfn> set by the <var>target member</var>.</li>
-        <li>A <dfn>disable</dfn> list set by the <var>disable
-        member</var>.</li>
-        <li>A <dfn>enable</dfn> list set by the <var>enable member</var>.</li>
-      </ul>
-      <p>The following sections define the set of known members in each JSON
-      object describing the policy. Future versions of this document may define
-      additional such members and user agents MUST ignore unknown members when
-      parsing the object.</p>
-      <section>
-        <h2>The <var>target member</var></h2>
-        <p>The OPTIONAL <dfn>target member</dfn> defines the scope in which the
-        directive is enforced. The member's name is "`target`" and the
-        recognized values are either an array of serialized origins which may
-        contain the "`self`" keyword that refers to current global's origin, or
-        the string "`\*`". If an unknown value is specified, or if no member
-        named "`target`" is present in the object, the <a>directive</a>'s
-        <a>target</a> will be set to "`\*`".</p>
-      </section>
-      <section>
-        <h2>The <var>disable member</var></h2>
-        <p>The OPTIONAL <dfn>disable member</dfn> defines the <a>disable
-        policy</a> for the directive. The member's name is "`disable`" and the
-        value is a list of ASCII strings.</p>
-      </section>
-      <section>
-        <h2>The <var>enable member</var></h2>
-        <p>The OPTIONAL <dfn>enable member</dfn> defines the <a>enable
-        policy</a> for the directive. The member's name is "`enable`" and the
-        value is a list of ASCII strings. [response]</p>
-      </section>
+      <h2>Inherited policies</h2>
+      <p>Each document in a frame tree inherits a set of features
+      from its parent frame, or in the case of the top-level
+      document, from the defined defaults for each feature. This
+      inherited policy set determines the initial state (enabled or
+      disabled) of each feature, and whether it can be controlled
+      by a <a>declared policy</a> in the document.</p>
+      <p>In a top-level document, or a [WorkerGlobalScope], the
+      inherited feature set is based on defined defaults for each
+      feature.</p>
+      <p>An <dfn>inherited policy</dfn> for a feature is a boolean
+      associated with a feature in a document or WorkerGlobalScope.
+      It can take the value Enabled or Disabled.</p>
+      <p>An <a>inherited policy</a> for a document or
+      WorkerGlobalScope is a set of <a>inherited policies</a> for
+      each feature available in that scope.</p>
     </section>
     <section>
-      <h2>Delivery</h2>
-      <section>
-        <h2>`Feature-Policy` HTTP Header Field</h2>
-        <p>The <dfn>Feature-Policy</dfn> HTTP header field can be used both in
-        the [response] (server to client) and a [request] (client to server) to
-        communicate the <a>feature policy</a>. In the former case, the server
-        is communicating the desired policy that should be enforced by the
-        client, and in the latter, the client is communicating the policy that
-        it will enforce.</p>
-        <p>The header's value is represented by the following ABNF
-        [[!RFC5234]]:</p>
-        <pre class="abnf">
-          Disable = 1#json-field-value
-                    ; See Section 2 of [[HTTP-JFV]], and Section 2 of [[RFC7159]]
-        </pre>
-        <p>When the user agent receives a `Feature-Policy` header field, it
-        MUST <a href="#process-response-policy">process</a> and <a>enforce</a>
-        the serialized policy as described in <a href=
-        "#integration-with-html"></a>. When the user agent [performs a
-        fetch][fetching algorithm], it MUST advertise the active <a>feature
-        policy</a> as described in <a href="#integration-with-fetch"></a>.</p>
-        <h2>Process response policy</h2>
-        <p>Given a [response] (<var>response</var>) and [global object]
-        (<var>global</var>), this algorithm returns a <a>feature
-        policy</a>.</p>
-        <ol>
-          <li>Abort these steps if the <var>response</var>’s [header list] does
-          not contain a [header] whose [name] is "`Feature-Policy`".</li>
-          <li>Let <var>header</var> be the [value] of the [header] in
-          <var>response</var>’s [header list] whose name is
-          "`Feature-Policy`".</li>
-          <li>Let <var>feature policy</var> be the result of executing
-            <a href="#parse-policy-from-value-and-global"></a> on
-            <var>header</var> and <var>global</var>.
-          </li>
-        </ol>
-      </section>
-      <section>
-        <h2>The `meta` element</h2>
-        <p>A [Document] may deliver a policy via one or more HTML [meta]
-        elements whose [http-equiv] attributes are an [ASCII case-insensitive]
-        match for the string "`Feature-Policy`". For example:</p>
-        <pre class="example nolinks">
+      <h2>Declared policies</h2>
+      <p>A <dfn>declared policy</dfn> is a dictionary, mapping
+      <a>feature names</a> to corresponding <a>whitelists</a> of
+      origins.</p>
+      <p>The declared policy is represented in as a JSON string</p>
+      <p>The following sections define the set of known members in
+      each JSON object describing the policy. Future versions of
+      this document may define additional such members and user
+      agents MUST ignore unknown members when parsing the
+      object.</p>
+    </section>
+    <section>
+      <h2>Whitelists</h2>
+      <p>A feature policy <dfn>whitelist</dfn> is a set of
+      <a>origins</a>. A <a>whitelist</a> may be <em>empty</em>, in
+      which case it does not match any origin, or it may contain a
+      list of origins, or it may match every origin. When defining
+      a whitelist in a policy, the special origin "self" may be
+      used. In an HTTP header, "self" refers to the origin of the
+      document which the header is associated with. In an iframe
+      attribute, "self" refers to the origin of the URL in the
+      iframe element's src attribute.</p>
+    </section>
+    <section>
+      <h2>The <var>target member</var></h2>
+      <p>The OPTIONAL <dfn>target member</dfn> defines the scope in
+      which the directive is enforced. The member's name is
+      "`target`" and the recognized values are either an array of
+      serialized origins which may contain the "`self`" keyword
+      that refers to current global's origin, or the string "`\*`".
+      If an unknown value is specified, or if no member named
+      "`target`" is present in the object, the <a>directive</a>'s
+      <a>target</a> will be set to "`\*`".</p>
+    </section>
+    <section>
+      <h2>The <var>disable member</var></h2>
+      <p>The OPTIONAL <dfn>disable member</dfn> defines the
+      <a>disable policy</a> for the directive. The member's name is
+      "`disable`" and the value is a list of ASCII strings.</p>
+    </section>
+    <section>
+      <h2>The <var>enable member</var></h2>
+      <p>The OPTIONAL <dfn>enable member</dfn> defines the
+      <a>enable policy</a> for the directive. The member's name is
+      "`enable`" and the value is a list of ASCII strings.
+      [response]</p>
+    </section>
+  </section>
+  <section>
+    <h2>Feature Policy Serialization</h2>
+    <section>
+      <h2>JSON Serialization</h2>
+      <p>Feature Policies are represented in HTTP headers and in
+      HTML attributes as JSON strings. The structure of the JSON
+      srting is as follows:</p>
+      <p>A feature policy JSON serialization is the JSON encoding
+      of a list of policy items</p>
+      <p>A policy item is an object, whose keys are the string
+      names of features, and whose values are whitelists.</p>
+      <p>A whitelist is represented as an array of strings, each of
+      which may be an origin, the string "*", or the string
+      "self".</p>
+    </section>
+  </section>
+  <section>
+    <h2>Delivery</h2>
+    <section>
+      <h2>`Feature-Policy` HTTP Header Field</h2>
+      <p>The <dfn>Feature-Policy</dfn> HTTP header field can be
+      used both in the [response] (server to client) and a
+      [request] (client to server) to communicate the <a>feature
+      policy</a>. In the former case, the server is communicating
+      the desired policy that should be enforced by the client, and
+      in the latter, the client is communicating the policy that it
+      will enforce.</p>
+      <p>The header's value is the JSON serialization of the
+      declared policy:</p>
+      <pre class="abnf">
+        FeaturePolicy = 1#json-field-value
+                  ; See Section 2 of [[HTTP-JFV]], and Section 2 of [[RFC7159]]
+</pre>
+      <p>When the user agent receives a `Feature-Policy` header
+      field, it MUST <a href="#process-response-policy">process</a>
+      and <a>enforce</a> the serialized policy as described in
+      <a href="#integration-with-html"></a>. When the user agent
+      [performs a fetch][fetching algorithm], it MUST advertise the
+      active <a>feature policy</a> as described in <a href=
+      "#integration-with-fetch"></a>.</p>
+      <h2>Process response policy</h2>
+      <p>Given a [response] (<var>response</var>) and [global
+      object] (<var>global</var>), this algorithm returns a
+      <a>feature policy</a>.</p>
+      <ol>
+        <li>Abort these steps if the
+        <var>response</var>&rsquo;s [header list] does
+        not contain a [header] whose [name] is
+        "`Feature-Policy`".</li>
+        <li>Let <var>header</var> be the [value] of the [header] in
+        <var>response</var>&rsquo;s [header list]
+        whose name is "`Feature-Policy`".</li>
+        <li>Let <var>feature policy</var> be the result of
+        executing <a href=
+        "#parse-policy-from-value-and-global"></a> on
+        <var>header</var> and <var>global</var>.</li>
+      </ol>
+    </section>
+    <section>
+      <h2><strike>The `meta` element</strike></h2>
+      <p>A [Document] may deliver a policy via one or more HTML
+      [meta] elements whose [http-equiv] attributes are an [ASCII
+      case-insensitive] match for the string "`Feature-Policy`".
+      For example:</p>
+      <pre class="example nolinks">
 &lt;meta http-equiv="Feature-Policy"
   content='{"disable": ["webrtc"]},
            {"enable":["geolocation"],"target":["https://example.com"}'&gt;
-        </pre>
-        <p>The `meta` policy is processed as defined in <a href=
-        "#process-meta-policy"></a> and modifications to the
-        [content][meta-content] attribute of a `meta` element after the element
-        has been parsed MUST be ignored.</p>
-        <p class="issue">TODO: talk about effect of multiple policies</p>
-        <section>
-          <h2>Process meta policy</h2>
-          <p class="note">This section extends HTML's `meta` [pragma
-          directives].</p><strong>Feature policy state
-          (http-equiv="feature-policy")</strong>
-          <ol>
-            <li>If the `meta` element is not a child of a `head` element, abort
-            these steps.</li>
-            <li>If the `meta` element is preceded by `link`, `script` or
-            `style` elements, abort these steps.</li>
-            <li>If the `meta` element has no [content][meta-content] attribute,
-            or if that attribute's value is the empty string, then abort these
-            steps.</li>
-            <li>Let <var>policy</var> be the result of executing <a href=
-            "#parse-policy-from-value-and-global"></a> on the `meta` element's
-            [content][meta-content] attribute's value and the <var>current
-            document</var>'s global.
-            </li>
-            <li>
-              <a>Enforce</a> the policy <var>policy</var>.
-            </li>
-          </ol>
-        </section>
-      </section>
+</pre>
+      <p>The `meta` policy is processed as defined in <a href=
+      "#process-meta-policy"></a> and modifications to the
+      [content][meta-content] attribute of a `meta` element after
+      the element has been parsed MUST be ignored.</p>
+      <p class="issue">TODO: talk about effect of multiple
+      policies</p>
       <section>
-        <h2>Parse policy from <var>value</var> and <var>global</var></h2>
-        <p>Given a string (<var>value</var>) and [global object]
-        (<var>global</var>) this algorithm will return a <a>feature
-        policy</a>.</p>
+        <h2>Process meta policy</h2>
+        <p class="note">This section extends HTML's `meta` [pragma
+        directives].</p><strong>Feature policy state
+        (http-equiv="feature-policy")</strong>
         <ol>
-          <li>Let <var>list</var> be the result of executing the algorithm
-          defined in Section 4 of [[!HTTP-JFV]]. If that algorithm results in
-          an error, abort these steps.</li>
-          <li>Let <var>policy</var> be an empty list.</li>
-          <li>For each <var>item</var> in <var>list</var>:
-            <ol>
-              <li>Let <var>target</var> be an empty list.</li>
-              <li>If <var>item</var> has a <a>target member</a> whose value is
-              an array, then for each <var>origin</var> in the array:
-                <ol>
-                  <li>If <var>origin</var> is an [ASCII case-insensitive] match
-                  for "`self`", let <var>result</var> be the
-                  <var>global</var>'s origin.</li>
-                  <li>Otherwise, let <var>result</var> be the result of
-                  executing the [URL parser] on <var>origin</var></li>
-                  <li>If <var>result</var> is not `failure`, then append the
-                  [origin of <var>result</var>][origin-of-url] to
-                  <var>target</var>.</li>
-                </ol>
-              </li>
-              <li>If <var>target</var> is still an empty list, set
-              <var>target</var> to "`\*`".</li>
-              <li>Let <var>disable</var> be the result of executing <a href=
-              "#parse-disable-features"></a> on the <var>item</var>'s
-              <a>disable member</a>'s value.
-              </li>
-              <li>Let <var>enable</var> be the result of executing <a href=
-              "#parse-enable-features"></a> on the <var>item</var>'s <a>enable
-              member</a>'s value.
-              </li>
-              <li>Let <var>tuple</var> be a new <a>directive</a> tuple whose
-              values are set as follows:
-                <dl>
-                  <dt>"`target`"</dt>
-                  <dd>Set to <var>target</var>.</dd>
-                  <dt>"`disable`"</dt>
-                  <dd>Set to <var>disable</var>.</dd>
-                  <dt>"`enable`"</dt>
-                  <dd>Set to <var>enable</var>.</dd>
-                </dl>
-              </li>
-              <li>Append <var>tuple</var> to <var>policy</var>.</li>
-            </ol>
-          </li>
-          <li>Return <var>policy</var>.</li>
+          <li>If the `meta` element is not a child of a `head`
+          element, abort these steps.</li>
+          <li>If the `meta` element is preceded by `link`, `script`
+          or `style` elements, abort these steps.</li>
+          <li>If the `meta` element has no [content][meta-content]
+          attribute, or if that attribute's value is the empty
+          string, then abort these steps.</li>
+          <li>Let <var>policy</var> be the result of executing
+          <a href="#parse-policy-from-value-and-global">parse
+          policy from value and global</a> on the `meta` element's
+          [content][meta-content] attribute's value and the
+          <var>current document</var>'s global.</li>
+          <li><a>Enforce</a> the policy <var>policy</var>.</li>
         </ol>
       </section>
     </section>
     <section>
-      <h2>Features</h2>
-      <p>This section defines <dfn>features</dfn> and their effect when applied
-      via a <a>directive</a> as part of a <a>feature policy</a>.</p>
-      <p>The following table summarizes <a>features</a> defined by this
-      specification, by their corresponding keywords. This table is
-      non-normative; the actual definitions are given in the following
-      sections.</p>
-      <table>
-        <thead>
-          <tr>
-            <th rowspan="2">Feature</th>
-            <th colspan="2">
-              <a>Enable policy</a>
-            </th>
-            <th rowspan="2">
-              <a>Disable policy</a>
-            </th>
-            <th rowspan="2">Brief description</th>
-          </tr>
-          <tr>
-            <th>top-level context</th>
-            <th>nested context</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>
-              <a>cookie</a>
-            </td>
-            <td>`\*`</td>
-            <td>`\*`</td>
-            <td>`null`</td>
-            <td>Controls access to `document.cookie`.</td>
-          </tr>
-          <tr>
-            <td>
-              <a>domain</a>
-            </td>
-            <td>`\*`</td>
-            <td>`\*`</td>
-            <td>`null`</td>
-            <td>Controls access to `document.domain`.</td>
-          </tr>
-          <tr>
-            <td>
-              <a>docwrite</a>
-            </td>
-            <td>`\*`</td>
-            <td>`\*`</td>
-            <td>`null`</td>
-            <td>Controls access to `document.write`, `document.writeln`.</td>
-          </tr>
-          <tr>
-            <td>
-              <a>...</a>
-            </td>
-            <td>...</td>
-            <td>...</td>
-            <td>...</td>
-            <td>...</td>
-          </tr>
-          <tr>
-            <td>
-              <a>geolocation</a>
-            </td>
-            <td>`self`</td>
-            <td>`null`</td>
-            <td>`null`</td>
-            <td>Controls access to [Geolocation interface].</td>
-          </tr>
-          <tr>
-            <td>
-              <a>midi</a>
-            </td>
-            <td>`self`</td>
-            <td>`null`</td>
-            <td>`null`</td>
-            <td>Controls access to [requestMIDIAccess method].</td>
-          </tr>
-          <tr>
-            <td>
-              <a>notifications</a>
-            </td>
-            <td>`self`</td>
-            <td>`null`</td>
-            <td>`null`</td>
-            <td>Controls access to [Notification interface].</td>
-          </tr>
-          <tr>
-            <td>
-              <a>payment</a>
-            </td>
-            <td>`self`</td>
-            <td>`null`</td>
-            <td>`null`</td>
-            <td>Controls access to [PaymentRequest interface].</td>
-          </tr>
-          <tr>
-            <td>
-              <a>push</a>
-            </td>
-            <td>`self`</td>
-            <td>`null`</td>
-            <td>`null`</td>
-            <td>Controls access to [PushManager interface].</td>
-          </tr>
-          <tr>
-            <td>
-              <a>sync-script</a>
-            </td>
-            <td>`\*`</td>
-            <td>`\*`</td>
-            <td>`null`</td>
-            <td>Controls use of synchronous `script` elements.</td>
-          </tr>
-          <tr>
-            <td>
-              <a>sync-xhr</a>
-            </td>
-            <td>`\*`</td>
-            <td>`\*`</td>
-            <td>`null`</td>
-            <td>Controls access to synchronous `XMLHttpRequest` API.</td>
-          </tr>
-          <tr>
-            <td>
-              <a>usermedia</a>
-            </td>
-            <td>`self`</td>
-            <td>`null`</td>
-            <td>`null`</td>
-            <td>Controls access to [NavigatorUserMedia interface].</td>
-          </tr>
-          <tr>
-            <td>
-              <a>vibrate</a>
-            </td>
-            <td>`self`</td>
-            <td>`null`</td>
-            <td>`null`</td>
-            <td>Controls access to [vibrate method].</td>
-          </tr>
-          <tr>
-            <td>
-              <a>webrtc</a>
-            </td>
-            <td>`\*`</td>
-            <td>`\*`</td>
-            <td>`null`</td>
-            <td>Controls access to [RTCPeerConnection interface].</td>
-          </tr>
-        </tbody>
-      </table>
+      <h2>The `featurepolicy` attribute of the `iframe`
+      element</h2>
+    </section>
+    <section>
+      <h2>The `allow` attribute of the `iframe` element</h2>
+    </section>
+    <section>
+      <h2>Additional attributes to support legacy features</h2>
       <section>
-        <h2><dfn>`cookie`</dfn></h2>
-        <pre class="idl">
+        <h2>allowfullscreen</h2>
+      </section>
+      <section>
+        <h2>allowpaymentrequest</h2>
+      </section>
+      <section>
+        <h2>allowusermedia</h2>
+      </section>
+    </section>
+    <section>
+      <h2>Parse policy from <var>value</var> and <var>global</var></h2>
+      <!--
+      <p>Given a string (<var>value</var>) and [global object]
+      (<var>global</var>) this algorithm will return a <a>feature
+      policy</a>.</p>
+      <ol>
+        <li>Let <var>list</var> be the result of executing the algorithm
+        defined in Section 4 of [[!HTTP-JFV]]. If that algorithm results in
+        an error, abort these steps.</li>
+        <li>Let <var>policy</var> be an empty list.</li>
+        <li>For each <var>item</var> in <var>list</var>:
+          <ol>
+            <li>Let <var>target</var> be an empty list.</li>
+            <li>If <var>item</var> has a <a>target member</a> whose value is
+            an array, then for each <var>origin</var> in the array:
+              <ol>
+                <li>If <var>origin</var> is an [ASCII case-insensitive] match
+                for "`self`", let <var>result</var> be the
+                <var>global</var>'s origin.</li>
+                <li>Otherwise, let <var>result</var> be the result of
+                executing the [URL parser] on <var>origin</var></li>
+                <li>If <var>result</var> is not `failure`, then append the
+                [origin of <var>result</var>][origin-of-url] to
+                <var>target</var>.</li>
+              </ol>
+            </li>
+  <li>If <var>target</var> is still an empty list, set
+            <var>target</var> to "`\*`".</li>
+            <li>Let <var>disable</var> be the result of executing <a href=
+            "#parse-disable-features"></a> on the <var>item</var>'s
+            <a>disable member</a>'s value.
+            </li>
+            <li>Let <var>enable</var> be the result of executing <a href=
+            "#parse-enable-features"></a> on the <var>item</var>'s <a>enable
+            member</a>'s value.
+            </li>
+            <li>Let <var>tuple</var> be a new <a>directive</a> tuple whose
+            values are set as follows:
+              <dl>
+                <dt>"`target`"</dt>
+                <dd>Set to <var>target</var>.</dd>
+                <dt>"`disable`"</dt>
+                <dd>Set to <var>disable</var>.</dd>
+                <dt>"`enable`"</dt>
+                <dd>Set to <var>enable</var>.</dd>
+              </dl>
+            </li>
+            <li>Append <var>tuple</var> to <var>policy</var>.</li>
+          </ol>
+        </li>
+        <li>Return <var>policy</var>.</li>
+      </ol>-->
+      <p>Given a string (value) and global object (global) this algorithm will return a declared feature policy.</p>
+      <ol>
+        <li>Let policy be an empty list.</li>
+        <li>Let list be the result of executing the algorithm defined in Section 4 of [HTTP-JFV] on value. If that algorithm results in an error, return policy.</li>
+        <li>For each item in list:</li>
+        <ol>
+          <li>If item is not an object, abort these steps and continue with the next item.</li>
+          <li>For each key and associated targetlist in item:</li>
+          <ol>
+            <li>If key is not equal to the name of any recognized feature, abort these steps and continue with the next key and targetlist.</li>
+            <li>If targetlist is not an array, abort these steps and continue with the next key and targetlist.</li>
+            <li>Let whitelist be a new whitelist.</li>
+            <li>If targetlist contains the string ??S*??, set whitelist to match every origin.</li>
+            <li>Otherwise, for each origin in targetlist:</li>
+            <ol>
+              <li>If origin is an ASCII case-insensitive match for "self", let result be global's origin.</li>
+              <li>Otherwise, let result be the result of executing the URL parser on origin.</li>
+              <li>If result is not failure:</li>
+              <ol>
+                <li>Let target be the origin of result.</li>
+                <li>If target is not an opaque origin, append target to whitelist.</li>
+              </ol>
+            </ol>
+            <li>Append whitelist to policy.</li>
+          </ol>
+        </ol>
+        <li>Return policy.</li>
+      </ol>
+    </section>
+  </section>
+  <section>
+    <h2>Features</h2>
+    <p>This section defines <dfn>features</dfn> and their effect
+    when applied via a <a>directive</a> as part of a <a>feature
+    policy</a>.</p>
+    <p>The following table summarizes <a>features</a> defined by
+    this specification, by their corresponding keywords. This table
+    is non-normative; the actual definitions are given in the
+    following sections.</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th><a>Default Whitelist</a></th>
+          <th>Brief description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><a>cookie</a></td>
+          <td>`\*`</td>
+          <td>Controls access to `document.cookie`.</td>
+        </tr>
+        <tr>
+          <td><a>domain</a></td>
+          <td>`\*`</td>
+          <td>Controls access to `document.domain`.</td>
+        </tr>
+        <tr>
+          <td><a>docwrite</a></td>
+          <td>`\*`</td>
+          <td>Controls access to `document.write`,
+          `document.writeln`.</td>
+        </tr>
+        <tr>
+          <td><a>fullscreen</a></td>
+          <td>`self`</td>
+          <td>Controls access to [Fullscreen API].</td>
+        </tr>
+        <tr>
+          <td><a>geolocation</a></td>
+          <td>`self`</td>
+          <td>Controls access to [Geolocation interface].</td>
+        </tr>
+        <tr>
+          <td><a>midi</a></td>
+          <td>`\*`</td>
+          <td>Controls access to [requestMIDIAccess method].</td>
+        </tr>
+        <tr>
+          <td><a>notifications</a></td>
+          <td>`\*`</td>
+          <td>Controls access to [Notification interface].</td>
+        </tr>
+        <tr>
+          <td><a>payment</a></td>
+          <td>`self`</td>
+          <td>Controls access to [PaymentRequest interface].</td>
+        </tr>
+        <tr>
+          <td><a>push</a></td>
+          <td>`\*`</td>
+          <td>Controls access to [PushManager interface].</td>
+        </tr>
+        <tr>
+          <td><a>sync-script</a></td>
+          <td>`\*`</td>
+          <td>Controls use of synchronous `script` elements.</td>
+        </tr>
+        <tr>
+          <td><a>sync-xhr</a></td>
+          <td>`\*`</td>
+          <td>Controls access to synchronous `XMLHttpRequest`
+          API.</td>
+        </tr>
+        <tr>
+          <td><a>usermedia</a></td>
+          <td>`\*`</td>
+          <td>Controls access to [NavigatorUserMedia interface].</td>
+        </tr>
+        <tr>
+          <td><a>vibrate</a></td>
+          <td>`self`</td>
+          <td>Controls access to [vibrate method].</td>
+        </tr>
+        <tr>
+          <td><a>webrtc</a></td>
+          <td>`\*`</td>
+          <td>Controls access to [RTCPeerConnection interface].</td>
+        </tr>
+        <tr>
+          <td><a>webvr</a></td>
+          <td>`\*`</td>
+          <td>Controls access to [RTCPeerConnection interface].</td>
+        </tr>
+      </tbody>
+    </table>
+    <section>
+      <h2><dfn>`cookie`</dfn></h2>
+      <pre class="idl">
 partial interface Document {
   [Feature=cookie] attribute USVString cookie;
-};</pre>
-        <p>The <a>cookie</a> keyword controls whether the [cookie attribute] is
-        [exposed] for [current global object].</p>
-        <ol>
-          <li>The default <a>enable policy</a> is `\*` for [top-level browsing
-          context], and `\*` for [nested browsing context].
-          </li>
-          <li>The default <a>disable policy</a> is `null`.
-          </li>
-        </ol>
-      </section>
-      <section>
-        <h2><dfn>`domain`</dfn></h2>
-        <pre class="idl">
+};
+</pre>
+      <p>The <a>cookie</a> keyword controls whether the [cookie
+      attribute] is [exposed] for [current global object].</p>
+      <ol>
+        <li>The default <a>enable policy</a> is `\*` for [top-level
+        browsing context], and `\*` for [nested browsing
+        context].</li>
+        <li>The default <a>disable policy</a> is `null`.</li>
+      </ol>
+    </section>
+    <section>
+      <h2><dfn>`domain`</dfn></h2>
+      <pre class="idl">
 partial interface Document {
   [Feature=domain] attribute USVString domain;
-};</pre>
-        <p>The <a>domain</a> keyword controls whether the [domain attribute] is
-        [exposed] for [current global object].</p>
-        <ol>
-          <li>The default <a>enable policy</a> is `\*` for [top-level browsing
-          context], and `\*` for [nested browsing context].
-          </li>
-          <li>The default <a>disable policy</a> is `null`.
-          </li>
-        </ol>
-      </section>
-      <section>
-        <h2><dfn>`docwrite`</dfn></h2>
-        <pre class="idl">
+};
+</pre>
+      <p>The <a>domain</a> keyword controls whether the [domain
+      attribute] is [exposed] for [current global object].</p>
+      <ol>
+        <li>The default <a>enable policy</a> is `\*` for [top-level
+        browsing context], and `\*` for [nested browsing
+        context].</li>
+        <li>The default <a>disable policy</a> is `null`.</li>
+      </ol>
+    </section>
+    <section>
+      <h2><dfn>`docwrite`</dfn></h2>
+      <pre class="idl">
 partial interface Document {
   [CEReactions, Feature=docwrite] void write(DOMString... text);
   [CEReactions, Feature=docwrite] void writeln(DOMString... text);
-};</pre>
-        <p>The <a>docwrite</a> keyword controls whether the [document.write]
-        and [document.writeln] methods are [exposed] for [current global
-        object].</p>
-        <ol>
-          <li>The default <a>enable policy</a> is `\*` for [top-level browsing
-          context], and `\*` for [nested browsing context].
-          </li>
-          <li>The default <a>disable policy</a> is `null`.
-          </li>
-        </ol>
-      </section>
-      <section>
-        <h2><dfn>`geolocation`</dfn></h2>
-        <pre class="idl">
+};
+</pre>
+      <p>The <a>docwrite</a> keyword controls whether the
+      [document.write] and [document.writeln] methods are [exposed]
+      for [current global object].</p>
+      <ol>
+        <li>The default <a>enable policy</a> is `\*` for [top-level
+        browsing context], and `\*` for [nested browsing
+        context].</li>
+        <li>The default <a>disable policy</a> is `null`.</li>
+      </ol>
+    </section>
+    <section>
+      <h2><dfn>`fullscreen`</dfn></h2>
+      <pre class="idl">
 partial interface Navigator {
   [Feature=geolocation] readonly attribute Geolocation geolocation;
-};</pre>
-        <p>The <a>geolocation</a> keyword controls whether the [Geolocation
-        interface] ([[!GEOLOCATION-API]]) is [exposed] for [current global
-        object].</p>
-        <ol>
-          <li>The default <a>enable policy</a> is `self` for [top-level
-          browsing context], and `null` for [nested browsing context].
-          </li>
-          <li>The default <a>disable policy</a> is `null`.
-          </li>
-        </ol>
-      </section>
-      <section>
-        <h2><dfn>`midi`</dfn></h2>
-        <pre class="idl">
+};
+</pre>
+      <p>The <a>fullscreen</a> keyword controls whether the
+      [Fullscreen API] ([[!WHATWG-FULLSCREEN]]) is [exposed]
+      for [current global object].</p>
+      <ol>
+        <li>The <a>default whitelist</a> is `["self"]`; the feature is enabled
+          by default for [top-level browsing context], and disabled for [nested
+        browsing context].</li>
+        <li>If disabled by policy, the document is not <a>allowed to use</a> the
+          fullscreen feature.</li>
+      </ol>
+    </section>
+    <section>
+      <h2><dfn>`geolocation`</dfn></h2>
+      <pre class="idl">
+partial interface Navigator {
+  [Feature=geolocation] readonly attribute Geolocation geolocation;
+};
+</pre>
+      <p>The <a>geolocation</a> keyword controls whether the
+      [Geolocation interface] ([[!GEOLOCATION-API]]) is [exposed]
+      for [current global object].</p>
+      <ol>
+        <li>The default <a>enable policy</a> is `self` for
+        [top-level browsing context], and `null` for [nested
+        browsing context].</li>
+        <li>The default <a>disable policy</a> is `null`.</li>
+      </ol>
+    </section>
+    <section>
+      <h2><dfn>`midi`</dfn></h2>
+      <pre class="idl">
 partial interface Navigator {
   [Feature=midi] Promise&lt;MIDIAccess&gt; requestMIDIAccess (optional MIDIOptions options);
-};</pre>
-        <p>The <a>midi</a> keyword controls whether the [requestMIDIAccess
-        method] ([[!WEBMIDI]]) is [exposed] for [current global object].</p>
-        <ol>
-          <li>The default <a>enable policy</a> is `self` for [top-level
-          browsing context], and `null` for [nested browsing context].
-          </li>
-          <li>The default <a>disable policy</a> is `null`.
-          </li>
-        </ol>
-      </section>
-      <section>
-        <h2><dfn>`notifications`</dfn></h2>
-        <pre class="idl">
+};
+</pre>
+      <p>The <a>midi</a> keyword controls whether the
+      [requestMIDIAccess method] ([[!WEBMIDI]]) is [exposed] for
+      [current global object].</p>
+      <ol>
+        <li>The default <a>enable policy</a> is `self` for
+        [top-level browsing context], and `null` for [nested
+        browsing context].</li>
+        <li>The default <a>disable policy</a> is `null`.</li>
+      </ol>
+    </section>
+    <section>
+      <h2><dfn>`notifications`</dfn></h2>
+      <pre class="idl">
 [Constructor(DOMString title, optional NotificationOptions options),
 Feature=notifications]
-interface Notification : EventTarget {};</pre>
-        <p>The <a>notifications</a> keyword controls whether the [Notification
-        interface] ([[!NOTIFICATIONS]]) is [exposed] for [current global
-        object].</p>
-        <ol>
-          <li>The default <a>enable policy</a> is `self` for [top-level
-          browsing context], and `null` for [nested browsing context].
-          </li>
-          <li>The default <a>disable policy</a> is `null`.
-          </li>
-        </ol>
-      </section>
-      <section>
-        <h2><dfn>`payment`</dfn></h2>
-        <pre class="idl">
+interface Notification : EventTarget {};
+</pre>
+      <p>The <a>notifications</a> keyword controls whether the
+      [Notification interface] ([[!NOTIFICATIONS]]) is [exposed]
+      for [current global object].</p>
+      <ol>
+        <li>The default <a>enable policy</a> is `self` for
+        [top-level browsing context], and `null` for [nested
+        browsing context].</li>
+        <li>The default <a>disable policy</a> is `null`.</li>
+      </ol>
+    </section>
+    <section>
+      <h2><dfn>`payment`</dfn></h2>
+      <pre class="idl">
 [Constructor(sequence&lt;PaymentMethodData&gt; methodData, PaymentDetails details, optional PaymentOptions options),
  SecureContext, Feature=payment]
-interface PaymentRequest : EventTarget {};</pre>
-        <p>The <a>payment</a> keyword controls whether the [PaymentRequest
-        interface] ([[!PAYMENT-REQUEST]]) is [exposed] for [current global
-        object].</p>
-        <ol>
-          <li>The default <a>enable policy</a> is `self` for [top-level
-          browsing context], and `null` for [nested browsing context].
-          </li>
-          <li>The default <a>disable policy</a> is `null`.
-          </li>
-        </ol>
-      </section>
-      <section>
-        <h2><dfn>`push`</dfn></h2>
-        <pre class="idl">
+interface PaymentRequest : EventTarget {};
+</pre>
+      <p>The <a>payment</a> keyword controls whether the
+      [PaymentRequest interface] ([[!PAYMENT-REQUEST]]) is
+      [exposed] for [current global object].</p>
+      <ol>
+        <li>The <a>default whitelist</a> is `["self"]`; the feature is enabled
+          by default for [top-level browsing context], and disabled for [nested
+        browsing context].</li>
+        <li>If disabled by policy, the document is not <a>allowed to use</a> the
+          paymentrequest feature.</li>
+      </ol>
+    </section>
+    <section>
+      <h2><dfn>`push`</dfn></h2>
+      <pre class="idl">
 partial interface ServiceWorkerRegistration {
   [Feature=push] readonly attribute PushManager pushManager;
 };
-
 [Feature=push]
 interface PushManager {};
 </pre>
-        <p>The <a>push</a> keyword controls whether the [PushManager interface]
-        ([[!PUSH-API]]) is [exposed] for [current global object].</p>
-        <ol>
-          <li>The default <a>enable policy</a> is `self` for [top-level
-          browsing context], and `null` for [nested browsing context].
-          </li>
-          <li>The default <a>disable policy</a> is `null`.
-          </li>
-        </ol>
-      </section>
-      <section>
-        <h2><dfn>`sync-script`</dfn></h2>
-        <p>The <a>sync-script</a> keyword controls use of synchronous `script`
-        elements, as defined in <a href="#integration-with-html"></a>. When
-        this feature is disabled, such scripts are ignored by the user
-        agent.</p>
-        <div class="example">
-          <p>Given the following header:</p>
-          <pre>
+      <p>The <a>push</a> keyword controls whether the [PushManager
+      interface] ([[!PUSH-API]]) is [exposed] for [current global
+      object].</p>
+      <ol>
+        <li>The default <a>enable policy</a> is `self` for
+        [top-level browsing context], and `null` for [nested
+        browsing context].</li>
+        <li>The default <a>disable policy</a> is `null`.</li>
+      </ol>
+    </section>
+    <section>
+      <h2><dfn>`sync-script`</dfn></h2>
+      <p>The <a>sync-script</a> keyword controls use of synchronous
+      `script` elements, as defined in <a href=
+      "#integration-with-html"></a>. When this feature is disabled,
+      such scripts are ignored by the user agent.</p>
+      <div class="example">
+        <p>Given the following header:</p>
+        <pre>
   <a>Feature-Policy</a>: {"<a data-lt=
-"disable member">disable</a>":["<a>sync-script</a>"]}</pre>
-          <p>The following HTML will not result in execution of `script1.js`,
-          as it has neither a [`defer`] nor an [`async`] attribute. The
-          remaining scripts will execute normally because they have their
-          [non-blocking] flag set.</p>
-          <pre>
+"disable member">disable</a>":["<a>sync-script</a>"]}
+</pre>
+        <p>The following HTML will not result in execution of
+        `script1.js`, as it has neither a [`defer`] nor an
+        [`async`] attribute. The remaining scripts will execute
+        normally because they have their [non-blocking] flag
+        set.</p>
+        <pre>
   &lt;script src="/script1.js"&gt;&lt;/script&gt;
   &lt;script src="/script2.js" <strong>async</strong>&gt;&lt;/script&gt;
   &lt;script src="/script3.js" <strong>defer</strong>&gt;&lt;/script&gt;
@@ -686,284 +777,194 @@ interface PushManager {};
     const scriptEl = document.createElement("script");
     scriptEl.src = "/script4.js";
     document.body.appendChild(scriptEl);
-  &lt;/script&gt;</pre>
-        </div>
-      </section>
-      <section>
-        <h2><dfn>`sync-xhr`</dfn></h2>
-        <p>The <a>sync-xhr</a> keyword controls use of synchronous
-        `XMLHttpRequest` API, as defined in <a href=
-        "#integration-with-xmlhttprequest"></a>. When [open() method](xhr-open)
-        is called with <var>async</var> argument set to <var>false</var>, an
-        `InvalidAccessError` except will be thrown.</p>
-        <div class="example">
-          <p>Given the following header:</p>
-          <pre>
+  &lt;/script&gt;
+</pre>
+      </div>
+    </section>
+    <section>
+      <h2><dfn>`sync-xhr`</dfn></h2>
+      <p>The <a>sync-xhr</a> keyword controls use of synchronous
+      `XMLHttpRequest` API, as defined in <a href=
+      "#integration-with-xmlhttprequest"></a>. When [open()
+      method](xhr-open) is called with <var>async</var> argument
+      set to <var>false</var>, an `InvalidAccessError` except will
+      be thrown.</p>
+      <div class="example">
+        <p>Given the following header:</p>
+        <pre>
   <a>Feature-Policy</a>: {"<a data-lt=
-"disable member">disable</a>":["<a>sync-xhr</a>"]}</pre>
-          <p>The following JavaScript code will throw a `InvalidAccessError`
-          exception:</p>
-          <pre>
+"disable member">disable</a>":["<a>sync-xhr</a>"]}
+</pre>
+        <p>The following JavaScript code will throw a
+        `InvalidAccessError` exception:</p>
+        <pre>
   var xhr = new XMLHttpRequest();
-  xhr.open("GET", "/foo", false);</pre>
-        </div>
-      </section>
-      <section>
-        <h2><dfn>`usermedia`</dfn></h2>
-        <pre class="idl">
+  xhr.open("GET", "/foo", false);
+</pre>
+      </div>
+    </section>
+    <section>
+      <h2><dfn>`usermedia`</dfn></h2>
+      <pre class="idl">
 [Exposed=Window, NoInterfaceObject, Feature=usermedia]
 interface NavigatorUserMedia {
     [SameObject] readonly attribute MediaDevices mediaDevices;
-};</pre>
-        <p>The <a>usermedia</a> keyword controls whether the
-        [NavigatorUserMedia interface] ([[!MEDIACAPTURE-API]]) is [exposed] for
-        [current global object].</p>
-        <ol>
-          <li>The default <a>enable policy</a> is `self` for [top-level
-          browsing context], and `null` for [nested browsing context].
-          </li>
-          <li>The default <a>disable policy</a> is `null`.
-          </li>
-        </ol>
-      </section>
-      <section>
-        <h2><dfn>`vibrate`</dfn></h2>
-        <pre class="idl">
+};
+</pre>
+      <p>The <a>usermedia</a> keyword controls whether the
+      [NavigatorUserMedia interface] ([[!MEDIACAPTURE-API]]) is
+      [exposed] for [current global object].</p>
+      <ol>
+        <li>The default <a>enable policy</a> is `self` for
+        [top-level browsing context], and `null` for [nested
+        browsing context].</li>
+        <li>The default <a>disable policy</a> is `null`.</li>
+      </ol>
+    </section>
+    <section>
+      <h2><dfn>`vibrate`</dfn></h2>
+      <pre class="idl">
 partial interface Navigator {
   [Feature=vibrate] boolean vibrate(VibratePattern pattern);
-};</pre>
-        <p>The <a>vibrate</a> keyword controls whether the [vibrate method]
-        ([[!VIBRATION]]) is [exposed] for [current global object].</p>
-        <ol>
-          <li>The default <a>enable policy</a> is `self` for [top-level
-          browsing context], and `null` for [nested browsing context].
-          </li>
-          <li>The default <a>disable policy</a> is `null`.
-          </li>
-        </ol>
-      </section>
-      <section>
-        <h2><dfn>`webrtc`</dfn></h2>
-        <pre class="idl">
+};
+</pre>
+      <p>The <a>vibrate</a> keyword controls whether the [vibrate
+      method] ([[!VIBRATION]]) is [exposed] for [current global
+      object].</p>
+      <ol>
+        <li>The default <a>enable policy</a> is `self` for
+        [top-level browsing context], and `null` for [nested
+        browsing context].</li>
+        <li>The default <a>disable policy</a> is `null`.</li>
+      </ol>
+    </section>
+    <section>
+      <h2><dfn>`webrtc`</dfn></h2>
+      <pre class="idl">
 [Constructor(optional RTCConfiguration configuration), Feature=webrtc]
-interface RTCPeerConnection : EventTarget {};</pre>
-        <p>The <a>webrtc</a> keyword controls whether the [RTCPeerConnection
-        interface] ([[!WEBRTC]]) is [exposed] for [current global object].</p>
-        <ol>
-          <li>The default <a>enable policy</a> is `\*` for [top-level browsing
-          context], and `\*` for [nested browsing context].
-          </li>
-          <li>The default <a>disable policy</a> is `null`.
-          </li>
-        </ol>
-      </section>
-    </section>
-  </section>
-  <section>
-    <h2>Disable Policy</h2>
-    <p>The <dfn>disable policy</dfn> allows a developer to turn off certain
-    features for a <code>Document</code> or <code>Worker</code>.</p>
-    <section>
-      <h2>Processing</h2>
-      <section>
-        <h2>Parse disable features</h2>
-        <p>Given a <var>list</var>, this algorithm returns a list of
-        <a>features</a>, which may be empty.</p>
-        <ol>
-          <li>Let <var>valid-features</var> be an empty list.</li>
-          <li>If <var>list</var> is <var>null</var> or empty, return
-          <var>valid-features</var>.</li>
-          <li>For each <var>item</var> in <var>list</var>:
-            <ol>
-              <li>Convert <var>item</var> to ASCII-lowercase.</li>
-              <li>If <var>item</var>'s string value is not one of the
-              <a>features</a>, ignore <var>item</var>, and continue to the next
-              item.
-              </li>
-              <li>Append <var>item</var> to <var>valid-features</var>.</li>
-            </ol>
-          </li>
-          <li>Return <var>valid-features</var>.</li>
-        </ol>
-      </section>
-    </section>
-  </section>
-  <section>
-    <h2>Enable Policy</h2>
-    <p>The <dfn>enable policy</dfn> allows a developer to turn on certain
-    features for a <code>Document</code> or <code>Worker</code>.</p>
-    <section>
-      <h2>Processing</h2>
-      <section>
-        <h2>Parse enable features</h2>
-        <p>Given a <var>list</var>, this algorithm returns a list of
-        <a>features</a>, which may be empty.</p>
-        <ol>
-          <li>Let <var>valid-features</var> be an empty list.</li>
-          <li>If <var>list</var> is <var>null</var> or empty, return
-          <var>valid-features</var>.</li>
-          <li>For each <var>item</var> in <var>list</var>:
-            <ol>
-              <li>Convert <var>item</var> to ASCII-lowercase.</li>
-              <li>TODO... should we merge/refactor this with disable
-              parse?</li>
-              <li>Append <var>item</var> to <var>valid-features</var>.</li>
-            </ol>
-          </li>
-          <li>Return <var>valid-features</var>.</li>
-        </ol>
-      </section>
+interface RTCPeerConnection : EventTarget {};
+</pre>
+      <p>The <a>webrtc</a> keyword controls whether the
+      [RTCPeerConnection interface] ([[!WEBRTC]]) is [exposed] for
+      [current global object].</p>
+      <ol>
+        <li>The default <a>enable policy</a> is `\*` for [top-level
+        browsing context], and `\*` for [nested browsing
+        context].</li>
+        <li>The default <a>disable policy</a> is `null`.</li>
+      </ol>
     </section>
   </section>
   <section>
     <h2>Integrations</h2>
-    <p>This document defines a set of algorithms which other specifications
-    will use in order to implement the restrictions which Feature Policy
-    defines. The integrations are outlined here for clarity, but those external
-    documents are the normative references which ought to be consulted for
-    detailed information.</p>
+    <p>This document defines a set of algorithms which other
+    specifications will use in order to implement the restrictions
+    which Feature Policy defines. The integrations are outlined
+    here for clarity, but those external documents are the
+    normative references which ought to be consulted for detailed
+    information.</p>
     <section>
       <h3>Integration with HTML</h3>
       <ol>
-        <li>
-          <code>Document</code> and <code>WorkerGlobalScope</code> objects have
-          a <dfn>Feature Policy List</dfn>, which is either the empty set or a
-          <a>feature policy</a>. This property is the empty set unless
-          otherwise specified, and is populated via the <a href=
-          "#initialize-for-global"></a> algorithm that is called during the
-          "Initialising a new <code>Document</code> object" and "Run a Worker"
-          algorithms.
-        </li>
-        <li>A <a>feature policy</a> is <dfn data-lt="enforce">enforced</dfn>
-        for a [global object] by inserting it into the [global object]'s
-        <a>Feature Policy list</a>.
-        </li>
-        <li>
-          <a>Feature policy</a> is enforced during <a href=
-          "#process-meta-policy">processing of the meta element’s
-          http-equiv</a>.
-        </li>
+        <li><code>Document</code> and
+        <code>WorkerGlobalScope</code> objects have a <dfn>Feature
+        Policy List</dfn>, which is either the empty set or a
+        <a>feature policy</a>. This property is the empty set
+        unless otherwise specified, and is populated via the
+        <a href="#initialize-for-global"></a> algorithm that is
+        called during the "Initialising a new <code>Document</code>
+        object" and "Run a Worker" algorithms.</li>
+        <li>A <a>feature policy</a> is <dfn data-lt=
+        "enforce">enforced</dfn> for a [global object] by inserting
+        it into the [global object]'s <a>Feature Policy
+        list</a>.</li>
+        <li><a>Feature policy</a> is enforced during <a href=
+        "#process-meta-policy">processing of the meta
+        element&rsquo;s http-equiv</a>.</li>
         <li>
           <p>The "[prepare a script]" algorithm calls into <a href=
-          "#is-feature-disabled"></a> algorithm to determine whether or not to
-          execute a script, as follows:</p>
+          "#is-feature-disabled"></a> algorithm to determine
+          whether or not to execute a script, as follows:</p>
           <ol>
-            <li>Add the following step before the current step 10 (which is the
-            first of several "disabled" checks):
+            <li>Add the following step before the current step 10
+            (which is the first of several "disabled" checks):
               <ol>
-                <li>If the `script` element's "`non-blocking`" flag is unset,
-                the `script`'s type is "`classic`", and the <a href=
-                "#is-feature-disabled"></a> algorithm returns "`Disabled`" when
-                executed upon the `script` element's node document's global
-                object, then abort these steps at this point. The script is not
-                executed.
-                </li>
+                <li>If the `script` element's "`non-blocking`" flag
+                is unset, the `script`'s type is "`classic`", and
+                the <a href="#is-feature-disabled"></a> algorithm
+                returns "`Disabled`" when executed upon the
+                `script` element's node document's global object,
+                then abort these steps at this point. The script is
+                not executed.</li>
               </ol>
             </li>
           </ol>
         </li>
       </ol>
       <div class="issue">
-        Monkey-patching! As soon as we know that this is the direction we wish
-        to persuse, upstream all of this.
+        Monkey-patching! As soon as we know that this is the
+        direction we wish to persuse, upstream all of this.
       </div>
       <section>
-        <h4 id="initialize-for-global">Initialize <var>global</var>'s Feature
-        Policy from <var>response</var></h4>
-        <p>Given a [response] (<var>response</var>) and a global object
-        (<var>global</var>), this algorithm populates <var>global</var>'s
-        <a>Feature Policy List</a></p>
+        <h4 id="initialize-for-global">Initialize
+        <var>global</var>'s Feature Policy from
+        <var>response</var></h4>
+        <h4>Define an inherited policy for feature for origin when document is initialized:</h4>
+        <p>Given a [response] (<var>response</var>) and a global
+        object (<var>global</var>), this algorithm returns
+        <var>global</var>'s <a>Inherited Policy</a> for [feature]</p>
         <ol>
-          <li>If <var>global</var> is a `Window` and its `Document` has a
-          parent browsing context or opener browsing context
-          (<var>context</var>):
+          <li>If current frame has a parent frame:
             <ol>
-              <li>Let <var>document</var> be the active document in
-              <var>context</var>.</li>
-              <li>For each <var>directive</var> in <var>document</var>'s
-              <a>Feature Policy List</a>:
+              <li>If feature is not enabled by the parent frame’s policy for the parent frame’s origin, return Disabled.</li>
+              <li>Otherwise, if feature appears in the &lt;iframe featurepolicy="..."&gt; attribute of the owning &lt;iframe&gt; element:
                 <ol>
-                  <li>Add <var>directive</var> to <var>global</var>'s
-                  `Document`'s <a>Feature Policy List</a> if any of the
-                  following are true:
-                    <ol>
-                      <li>
-                        <var>directive</var>'s <a>target</a> is "`\*`"
-                      </li>
-                      <li>
-                        <var>directive</var>'s <a>target</a> is an array
-                        containing <var>global</var>'s origin
-                      </li>
-                      <li><var>response</var>'s url's scheme is a local
-                      scheme</li>
-                    </ol>
-                  </li>
+                  <li>If origin is in the whitelist for feature, return Enabled.</li>
+                  <li>Otherwise return Disabled.</li>
                 </ol>
               </li>
-            </ol>
-          </li>
-          <li>If <var>global</var> is a `WorkerGlobalScope`:
-            <ol>
-              <li>For each <var>document</var> in <var>global</var>'s
-                <a href="https://html.spec.whatwg.org/multipage/workers.html#the-worker's-documents">
-                documents</a>:
+              <li>Otherwise, if feature appears in the &lt;iframe enable="..."&gt; attribute of the owning iframe:
                 <ol>
-                  <li>For each <var>directive</var> in <var>document</var>'s
-                  <a>Feature Policy List</a>:
-                    <ol>
-                      <li>Add <var>directive</var> to <var>global</var>'s
-                      <a>Feature Policy List</a> if either of the following are
-                      true:
-                        <ol>
-                          <li>
-                            <var>directive</var>'s <a>target</a> is "`\*`"
-                          </li>
-                          <li>
-                            <var>directive</var>'s <a>target</a> is an array
-                            containing <var>global</var>'s origin
-                          </li>
-                          <li><var>response</var>'s url's scheme is a local
-                          scheme</li>
-                        </ol>
-                      </li>
-                    </ol>
-                  </li>
+                  <li>If origin matches the origin of the URL in the &lt;iframe src="..."&gt; attribute of the owning iframe, return Enabled.</li>
                 </ol>
               </li>
+              <li>Otherwise, if feature is allowed by the parent frame’s policy for origin, return Enabled.</li>
+              <li>Otherwise, return Disabled.</li>
             </ol>
           </li>
-          <li>Let <var>policy</var> be the result of executing <a href=
-          "#process-response-policy"></a> on <var>response</var> and
-          <var>global</var>.
-          </li>
-          <li>
-            <a>Enforce</a> the policy <var>policy</var>.
-          </li>
+          <li>Otherwise, return Enabled.</li>
         </ol>
       </section>
       <section>
-        <h4 id="is-feature-disabled">Is <var>feature</var> disabled for
-        <var>global</var>?</h4>
-        <p>Given a string (<var>feature</var>) and a global object
-        (<var>global</var>), this algorithm returns "`Disabled`" if
-        <var>feature</var> should be considered disabled, and "`Enabled`"
-        otherwise.</p>
+        <h4 id="is-feature-disabled">Is <var>feature</var> enabled
+        for <var>global</var>?</h4>
         <ol>
-          <li>Let <var>policy</var> be <var>global</var>'s <a>Feature Policy
-          List</a>
-          </li>
-          <li>If <var>policy</var> is empty, return "`Enabled`".</li>
-          <li>For each <var>directive</var> in <var>policy</var>:
+          <li>Return the result of running Is feature enabled by policy for
+            origin, with global's origin as origin, and global's policy as
+            policy</li>
+      </section>
+      <section>
+        <h4 id="is-feature-disabled">Is <var>feature</var> enabled by policy
+        for <var>origin</var>?</h4>
+        <p>Given a string (<var>feature</var>) and a global object
+        (<var>global</var>), this algorithm returns True if
+        <var>feature</var> should be considered enabled, and
+        False otherwise.</p>
+        <ol>
+          <li>If inherited policy for feature for origin is Disabled, return False.</li>
+          <li>If feature is present in the current frame's header policy:
             <ol>
-              <li>If <var>directive</var>'s <a>disable</a> contains
-              <var>feature</var>:
-                <ol>
-                  <li>Return "`Disabled`".</li>
-                </ol>
-              </li>
+              <li>If the current frame's header policy for feature contains origin, return True.</li>
+              <li>Otherwise return False.</li>
             </ol>
           </li>
-          <li>Return "`Enabled`".</li>
+          <li>Otherwise:
+            <ol>
+              <li>If the feature's default whitelist is "`\*`", return True</li>
+              <li>If the feature's default whitelist is "`self`", and the origin matches the current frame's origin, then return True</li>
+            </ol>
+          </li>
+          <li>Otherwise, return False</li>
         </ol>
       </section>
     </section>
@@ -971,20 +972,22 @@ interface RTCPeerConnection : EventTarget {};</pre>
       <h2>Integration with Fetch</h2>
       <section>
         <h2>Set request policy</h2>
-        <p>This monkey patches [fetching algorithm], by inserting the following
-        steps after current step #4:</p>
+        <p>This monkey patches [fetching algorithm], by inserting
+        the following steps after current step #4:</p>
         <ol>
-          <li>If [request]'s [client] is not <var>null</var> and has a
-          non-empty <a>feature policy list</a>, run the following steps:
+          <li>If [request]'s [client] is not <var>null</var> and
+          has a non-empty <a>feature policy list</a>, run the
+          following steps:
             <ol>
-              <li>Let <var>policy</var> be the [current global object]'s
-              <a>feature policy list</a>.
-              </li>
-              <li>Let <var>serialized feature policy</var> be the result of
-              executing the [sender requirements] algorithm on
-              <var>policy</var>, as defined in section 3 of [[!HTTP-JFV]].</li>
-              <li>[Append](header-append) <var>Feature-Policy/serialized
-              feature policy</var> to request's [header list].</li>
+              <li>Let <var>policy</var> be the [current global
+              object]'s <a>feature policy list</a>.</li>
+              <li>Let <var>serialized feature policy</var> be the
+              result of executing the [sender requirements]
+              algorithm on <var>policy</var>, as defined in section
+              3 of [[!HTTP-JFV]].</li>
+              <li>[Append](header-append)
+              <var>Feature-Policy/serialized feature policy</var>
+              to request's [header list].</li>
             </ol>
           </li>
         </ol>
@@ -992,71 +995,73 @@ interface RTCPeerConnection : EventTarget {};</pre>
     </section>
     <section>
       <h2>Integration with XMLHttpRequest</h2>
-      <p>The `open() method` calls into the <a href="#is-feature-disabled"></a>
-      algorithm to determine whether or not to throw, as follows:</p>
+      <p>The `open() method` calls into the <a href=
+      "#is-feature-disabled"></a> algorithm to determine whether or
+      not to throw, as follows:</p>
       <ol>
         <li>Add the following step after the current step 3:
           <ol>
-            <li>If <var>async</var> is <var>false</var> and the <a href=
-            "#is-feature-disabled"></a> algorithm returns "`Disabled`" when
-            executed upon "`sync-xhr`" and the document's global object, throw
-            "`InvalidAccessError`" exception.
-            </li>
+            <li>If <var>async</var> is <var>false</var> and the
+            <a href="#is-feature-disabled"></a> algorithm returns
+            "`Disabled`" when executed upon "`sync-xhr`" and the
+            document's global object, throw "`InvalidAccessError`"
+            exception.</li>
           </ol>
         </li>
       </ol>
     </section>
     <section>
       <h2>Integration with WebIDL</h2>
-      <p>This section defines an extended attribute whose presence affects only
-      the ECMAScript binding.</p>
+      <p>This section defines an extended attribute whose presence
+      affects only the ECMAScript binding.</p>
       <section>
         <h2>[Feature]</h2>
-        <p>If the <dfn>[Feature]</dfn> [extended attribute] appears on an
-        interface, partial interface, or an individual interface member, it
-        indicates that the interface or interface member is subject to
-        <a>feature policy</a> associated with the ECMAScript global
-        environment's global object.</p>
-        <p>The <a>[Feature]</a> [extended attribute] must [take an identifier],
-        which must be a [global name].</p>
-        <p>Whether a construct that the <a>[Feature]</a> [extended attribute]
-        can be specified on is <dfn>enabled by feature policy for global</dfn>
-        is defined as follows:</p>
+        <p>If the <dfn>[Feature]</dfn> [extended attribute] appears
+        on an interface, partial interface, or an individual
+        interface member, it indicates that the interface or
+        interface member is subject to <a>feature policy</a>
+        associated with the ECMAScript global environment's global
+        object.</p>
+        <p>The <a>[Feature]</a> [extended attribute] must [take an
+        identifier], which must be a [global name].</p>
+        <p>Whether a construct that the <a>[Feature]</a> [extended
+        attribute] can be specified on is <dfn>enabled by feature
+        policy for global</dfn> is defined as follows:</p>
         <ol>
-          <li>If the <a>[Feature]</a> [extended attribute] is specified on the
-          construct, then it is <a>enabled by feature policy for global</a> if
-          the "<a href="#is-feature-disabled">is feature disabled for
-          global?</a>" algorithm returns "`Enabled`" when executed upon the
-          extended attribute's argument and the ECMAScript global environment's
-          global object.
-          </li>
-          <li>Otherwise, if the <a>[Feature]</a> [extended attribute] does not
-          appear on a construct, then it is <a>enabled by feature policy for
-          global</a>, depending on the type of construct:
+          <li>If the <a>[Feature]</a> [extended attribute] is
+          specified on the construct, then it is <a>enabled by
+          feature policy for global</a> if the "<a href=
+          "#is-feature-disabled">is feature disabled for
+          global?</a>" algorithm returns "`Enabled`" when executed
+          upon the extended attribute's argument and the ECMAScript
+          global environment's global object.</li>
+          <li>Otherwise, if the <a>[Feature]</a> [extended
+          attribute] does not appear on a construct, then it is <a>
+            enabled by feature policy for global</a>, depending on
+            the type of construct:
             <ol>
-              <li>**Interface**: the interface or dictionary is implicity
-              "`Enabled`" by feature policy.</li>
-              <li>**Partial interface**: the partial interface is <a>enabled by
-              feature policy for global</a> if and only if the original
-              interface definition is.
-              </li>
-              <li>**Interface member**: the interface member is <a>enabled by
-              feature policy for global</a> if and only if the interface or
-              partial interface the member is declared on is.
-              </li>
+              <li>**Interface**: the interface or dictionary is
+              implicity "`Enabled`" by feature policy.</li>
+              <li>**Partial interface**: the partial interface is
+              <a>enabled by feature policy for global</a> if and
+              only if the original interface definition is.</li>
+              <li>**Interface member**: the interface member is
+              <a>enabled by feature policy for global</a> if and
+              only if the interface or partial interface the member
+              is declared on is.</li>
             </ol>
           </li>
         </ol>
-        <p class="note">Whether a construct is <a>enabled by feature policy for
-        global</a> influences whether it is [exposed] in a given ECMAScript
-        global environment.</p>
+        <p class="note">Whether a construct is <a>enabled by
+        feature policy for global</a> influences whether it is
+        [exposed] in a given ECMAScript global environment.</p>
       </section>
     </section>
   </section>
   <section>
     <h2>IANA Considerations</h2>
-    <p>The permanent message header field registry should be updated with the
-    following registration [[!RFC3864]]:</p>
+    <p>The permanent message header field registry should be
+    updated with the following registration [[!RFC3864]]:</p>
     <dl>
       <dt>Header field name</dt>
       <dd>Feature-Policy</dd>
@@ -1067,19 +1072,15 @@ interface RTCPeerConnection : EventTarget {};</pre>
       <dt>Author/Change controller</dt>
       <dd>W3C</dd>
       <dt>Specification document</dt>
-      <dd>
-        <a href="">Feature Policy API</a>
-      </dd>
+      <dd><a href="">Feature Policy API</a></dd>
     </dl>
   </section>
   <section id="privacy" class="informative">
     <h2>Privacy and Security</h2>
     <p class="issue">TODO</p>
   </section>
-</body>
-</html>
-
-<!-- spec references. preserve before running tidy! -->
+  <!-- spec references. preserve before running tidy! -->
+  <!--
 [sandbox attribute]: https://html.spec.whatwg.org/multipage/the-iframe-element.html#attr-iframe-sandbox
 [sandbox directive]: https://www.w3.org/TR/2014/WD-CSP11-20140211/#sandbox
 [window]: https://www.w3.org/TR/html5/browsers.html#dom-window
@@ -1126,6 +1127,7 @@ interface RTCPeerConnection : EventTarget {};</pre>
 [nested browsing context]: https://html.spec.whatwg.org/#nested-browsing-context
 [document.write]: https://html.spec.whatwg.org/#dom-document-write
 [document.writeln]: https://html.spec.whatwg.org/#dom-document-writeln
+[Fullscreen API]: https://fullscreen.spec.whatwg.org/
 [Geolocation interface]: https://www.w3.org/TR/geolocation-API/#geolocation_interface
 [NavigatorUserMedia interface]: https://w3c.github.io/mediacapture-main/#navigatorusermedia
 [RTCPeerConnection interface]: http://w3c.github.io/webrtc-pc/#rtcpeerconnection-interface
@@ -1134,3 +1136,6 @@ interface RTCPeerConnection : EventTarget {};</pre>
 [PushManager interface]: https://w3c.github.io/push-api/#idl-def-PushManager
 [requestMIDIAccess method]: http://webaudio.github.io/web-midi-api/#requestMIDIAccess
 [vibrate method]: https://w3c.github.io/vibration/#idl-def-navigator-vibrate(vibratepattern)
+      -->
+</body>
+</html>

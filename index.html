@@ -1425,7 +1425,7 @@ pre.idl.highlight { color: #708090; }
   <div class="head">
    <p data-fill-with="logo"></p>
    <h1 class="p-name no-ref" id="title">Feature Policy</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Draft Community Group Report, <time class="dt-updated" datetime="2017-03-30">30 March 2017</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Draft Community Group Report, <time class="dt-updated" datetime="2017-04-05">5 April 2017</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -2054,6 +2054,9 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
 </pre>
      <p>When the user agent receives a <code>Feature-Policy</code> header field,
     it MUST <a href="#process-response-policy">process</a> and <a data-link-type="dfn" href="#enforce" id="ref-for-enforce-1">enforce</a> the serialized policy as described in <a href="#integration-with-html">§7.1 Integration with HTML</a>.</p>
+     <div class="note" role="note"> Note that it is not a requirement of this spec that all user agents
+    recognize all features, so this "MUST process" does not imply that user
+    agents will apply the policy exactly as the origin server intended. </div>
     </section>
     <section>
      <h3 class="heading settled" data-level="6.2" id="iframe-allow-attribute"><span class="secno">6.2. </span><span class="content">The <code>allow</code> attribute of the <code>iframe</code> element</span><a class="self-link" href="#iframe-allow-attribute"></a></h3>

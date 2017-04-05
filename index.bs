@@ -333,6 +333,11 @@ spec:fetch; type:dfn; text:value
     it MUST <a href="#process-response-policy">process</a> and <a>enforce</a>
     the serialized policy as described in <a href=
     "#integration-with-html"></a>.</p>
+    <div class="note">
+    Note that it is not a requirement of this spec that all user agents
+    recognize all features, so this "MUST process" does not imply that user
+    agents will apply the policy exactly as the origin server intended.
+    </div>
   </section>
   <section>
     <h3 id="iframe-allow-attribute">The <code>allow</code> attribute of the

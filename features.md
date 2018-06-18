@@ -5,25 +5,35 @@ is not intended to be a complete list: browsers may choose to implement other
 features not in this list. Nor is it intended to be normative: the definitions
 of these features all belong in their respective specs.
 
-| Feature name | Default allowlist | Brief Description |
-| ------ | ------ | - |
-|`accelerometer`|`self`|Controls access to accelerometer sensors on the device |
-|`ambient-light-sensor`|`self`|Controls access to ambient light sensors on the device |
-| `autoplay` | `self` | Controls access to autoplay through `play()` and `autoplay`. |
-| `camera` | `self` | Controls access to video input devices.|
-| `encrypted-media`| `self`|Controls whether `requestMediaKeySystemAccess()` is allowed.|
-| `fullscreen`|`self`|Controls whether `requestFullscreen()` is allowed.|
-|`geolocation`|`self`| Controls access to Geolocation interface. |
-|`gyroscope`|`self`|Controls access to gyroscope sensors on the device |
-|`magnetometer`|`self`|Controls access to magnetometer sensors on the device |
-|`microphone`|`self` | Controls access to audio input devices. |
-|`midi`|`self`|Controls access to `requestMIDIAccess()` method.|
-|`payment`|`self`|Controls access to PaymentRequest interface.|
-|`picture-in-picture`|`*`|Controls access to Picture in Picture.|
-|`speaker`|`self`|Controls access to audio output devices.|
-|`usb`|`self`|Controls access to USB devices.|
-|`vibrate`|`self`|Controls access to `vibrate()` method.|
-|`vr`|`self`|Controls access to VR displays.|
+| Feature name      | Default allowlist | Brief Description                                        |
+| ----------------------- | ------ | ------------------------------------------------------------- |
+| `accelerometer`         | `self` | Controls access to accelerometer sensors on the device.       |
+| `ambient-light-sensor`  | `self` | Controls access to ambient light sensors on the device.       |
+| `animations`            | `*`    | Controls which CSS properties can be animated.                |
+| `autoplay`              | `self` | Controls access to autoplay through `play()` and `autoplay`.  |
+| `camera`                | `self` | Controls access to video input devices.                       |
+| `document-write`        | `*`    | Controls access to `document.write` and related methods.      |
+| `encrypted-media`       | `self` | Controls whether `requestMediaKeySystemAccess()` is allowed.  |
+| `fullscreen`            | `self` | Controls whether `requestFullscreen()` is allowed.            |
+| `geolocation`           | `self` | Controls access to Geolocation interface.                     |
+| `gyroscope`             | `self` | Controls access to gyroscope sensors on the device.           |
+| `image-compression`     | `*`    | Require images to be reasonably well-compressed.              |
+| `legacy-image-formats`  | `*`    | Require images to be in a set of pre-defined formats.         |
+| `magnetometer`          | `self` | Controls access to magnetometer sensors on the device.        |
+| `max-downscaling-image` | `*`    | Require images to fit within their containing boxes.          |
+| `microphone`            | `self` | Controls access to audio input devices.                       |
+| `midi`                  | `self` | Controls access to `requestMIDIAccess()` method.              |
+| `payment`               | `self` | Controls access to PaymentRequest interface.                  |
+| `picture-in-picture`    | `*`    | Controls access to Picture in Picture.                        |
+| `speaker`               | `self` | Controls access to audio output devices.                      |
+| `sync-script`           | `*`    | Controls whether parser-blocking scripts are executed.        |
+| `sync-xhr`              | `*`    | Controls whether synchronous XMLHttpRequest are allowed.      |
+| `unsized-media`         | `*`    | Require images and videos to have width and height specified. |
+| `usb`                   | `self` | Controls access to USB devices.                               |
+| `vertical-scroll`       | `*`    | Controls whether a frame is allowed to intercept scrolling.   |
+| `vibrate`               | `self` | Controls access to `vibrate()` method.                        |
+| `vr`                    | `self` | Controls access to VR displays.                               |
+
 
 ## Feature Definitions
 

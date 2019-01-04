@@ -279,19 +279,14 @@ spec:reporting; urlPrefix: https://w3c.github.io/reporting/
       stored in the allowlist. The keywords themselves are not part of the
       allowlist.
     </div>
-    <p>To determine whether an <a>allowlist</a> <dfn>matches</dfn> an origin
-    <var>origin</var>, run these steps:
-    <ol>
-      <li>If the <a>allowlist</a> is <a>the special value <code>*</code></a>,
-      then return true.</li>
-      <li>Otherwise, for each <var>item</var> in the <a>allowlist</a>:
-        <ol>
-          <li>If <var>item</var> is [=same origin-domain=] with
-          <var>origin</var>, then return true.</li>
-        </ol>
-      </li>
-      <li>return false.</li>
-    </ol>
+    <p>To determine whether an <a>allowlist</a> |allowlist| <dfn>matches</dfn>
+      an [=origin=] |origin|, run these steps:
+        1. If |allowlist| is <a>the special value <code>*</code></a>, then
+          return true.
+        2. Otherwise, for each |item| of |allowlist|:
+            1. If |item| is [=same origin-domain=] with |origin|, then return
+              true.
+        3. Return false.
   </section>
   <section>
     <h3 id="default-allowlists">Default Allowlists</h3>
@@ -727,308 +722,200 @@ partial interface HTMLIFrameElement {
   <h2 id="algorithms">Algorithms</h2>
   <section>
     <h3 id="process-response-policy">Process response policy</h3>
-    <p>Given a [=response=] (<var>response</var>) and an [=origin=]
-    (<var>origin</var>), this algorithm returns a <a>declared feature
+    <p>Given a [=response=] (|response|) and an [=origin=]
+    (|origin|), this algorithm returns a <a>declared feature
     policy</a>.</p>
-    <ol>
-      <li>Abort these steps if the <var>response</var>’s <a
-      for="response">header list</a> does not contain a [=header=] whose
-      [=name=] is "<code>Feature-Policy</code>".
-      </li>
-      <li>Let <var>header</var> be the concatenation of the [=value=]s of all
-      [=header=] fields in <var>response</var>’s <a
-      for="response">header list</a> whose name is
+    1. Abort these steps if the |response|’s <a for="response">header list</a>
+      does not contain a [=header=] whose [=name=] is
+      "<code>Feature-Policy</code>".
+    2. Let |header| be the concatenation of the [=value=]s of all [=header=]
+      fields in |response|’s <a for="response">header list</a> whose name is
       "<code>Feature-Policy</code>", separated by U+002C (,) (according to
-      [RFC7230, 3.2.2]).</li>
-      <li>Let <var>feature policy</var> be the result of executing <a href=
-      "#parse-header"></a> on <var>header</var> and <var>origin</var>.
-      </li>
-      <li>Return <var>feature policy</var>.</li>
-    </ol>
+      [RFC7230, 3.2.2]).
+    3. Let |feature policy| be the result of executing <a
+      href="#parse-header"></a> on |header| and |origin|.
+    4. Return |feature policy|.
   </section>
   <section>
-    <h3 id="parse-header">Parse header from <var>value</var> and
-    <var>origin</var></h3>
-    <p>Given a string (<var>value</var>) and an [=origin=] (<var>origin</var>)
+    <h3 id="parse-header">Parse header from |value| and |origin|</h3>
+    <p>Given a string (|value|) and an [=origin=] (|origin|)
     this algorithm will return a <a>declared feature policy</a>.</p>
-    <ol>
-      <li>Let <var>policy</var> be an empty ordered map.</li>
-      <li>For each <var>element</var> returned by <a
-      lt="split on commas">splitting <var>value</var> on commas</a>:
-        <ol>
-          <li>Let <var>directive</var> be the result of executing <a href=
-          "#parse-policy-directive"></a> on <var>element</var> with
-          <var>container origin</var> set to <var>origin</var>.
-          </li>
-          <li>Run <a href="#merge-directive-with-declared-policy"></a> on <var>
-            directive</var> and <var>policy</var>.
-          </li>
-        </ol>
-      </li>
-      <li>Return <var>policy</var>.</li>
-    </ol>
+      1. Let |policy| be an empty ordered map.
+      2. For each |element| returned by <a lt="split on commas">splitting
+        |value| on commas</a>:
+          1. Let |directive| be the result of executing <a
+            href="#parse-policy-directive"></a> on |element| with |container
+            origin| set to |origin|.
+          2. Run <a href="#merge-directive-with-declared-policy"></a> on
+            |directive| and |policy|.
+      3. Return |policy|.
   </section>
   <section>
     <h3 id="parse-policy-directive">Parse policy directive</h3>
-    <p>Given a string (<var>value</var>), an [=origin=] (<var>container
-    origin</var>), and an optional [=origin=] (<var>target origin</var>), this
+    <p>Given a string (|value|), an [=origin=] (|container
+    origin|), and an optional [=origin=] (|target origin|), this
     algorithm returns a <a>policy directive</a>.
     </p>
-    <ol>
-      <li>Let <var>directive</var> be an empty ordered map.</li>
-      <li>For each <var>serialized-declaration</var> returned by <a
-      lt="strictly split">strictly splitting <var>value</var> on the delimiter
-      U+003B (;)</a>:
-        <ol>
-          <li>Let <var>tokens</var> be the result of <a
-          lt="split on ascii whitespace">splitting
-          <var>serialized-declaration</var> on ASCII whitespace.</a></li>
-          <li>If <var>tokens</var> is an empty list, then continue.</li>
-          <li>Let <var>feature-name</var> be the first element of
-          <var>tokens</var>.</li>
-          <li>If <var>feature-name</var> does not identify any recognized
-          <a>policy-controlled feature</a>, then continue.</li>
-          <li>Let <var>feature</var> be the <a>policy-controlled feature</a>
-          identified by <var>feature-name</var>.</li>
-          <li>Let <var>targetlist</var> be the remaining elements, if any, of
-          <var>tokens</var>.
-          <li>Let <var>allowlist</var> be a new <a>allowlist</a>.
-          </li>
-          <li>If any element of <var>targetlist</var> is the string
-          "<code>*</code>", set <var>allowlist</var> to <a>the special value
-          <code>*</code></a>.</li>
-          <li>Otherwise:
-            <ol>
-              <li>Set <var>allowlist</var> to an new <a>ordered set</a>.</li>
-              <li>If <var>targetlist</var> is empty and <var>target origin</var>
-              is given, append <var>target origin</var> to <var>allowlist</var>.
-              <li>For each <var>element</var> in <var>targetlist</var>:
-                <ol>
-                  <li>If <var>element</var> is an <a>ASCII case-insensitive</a>
-                  match for "<code>'self'</code>", let result be <var>container
-                  origin</var>.</li>
-                  <li>If <var>target origin</var> is given, and
-                  <var>element</var> is an <a>ASCII case-insensitive</a> match
-                  for "<code>'src'</code>", let result be <var>target
-                  origin</var>.</li>
-                  <li>Otherwise, let <var>result</var> be the result of
-                  executing the <a>URL parser</a> on <var>element</var>.</li>
-                  <li>If <var>result</var> is not failure:
-                    <ol>
-                      <li>Let <var>target</var> be the origin of
-                      <var>result</var>.</li>
-                      <li>If <var>target</var> is not an opaque origin, append
-                      <var>target</var> to <var>allowlist</var>.</li>
-                    </ol>
-                  </li>
-                </ol>
-              </li>
-            </ol>
-          </li>
-          <li>Set <var>directive</var>[<var>feature</var>] to
-          <var>allowlist</var>.</li>
-        </ol>
-      </li>
-      <li>Return <var>directive</var></li>
-    </ol>
+      1. Let |directive| be an empty ordered map.
+      2. For each |serialized-declaration| returned by <a
+        lt="strictly split">strictly splitting |value| on the delimiter U+003B
+        (;)</a>:
+          1. Let |tokens| be the result of <a
+            lt="split on ascii whitespace">splitting |serialized-declaration| on
+            ASCII whitespace.</a>
+          2. If |tokens| is an empty list, then continue.
+          3. Let |feature-name| be the first element of |tokens|.
+          4. If |feature-name| does not identify any recognized
+            <a>policy-controlled feature</a>, then continue.
+          5. Let |feature| be the <a>policy-controlled feature</a> identified by
+            |feature-name|.
+          6. Let |targetlist| be the remaining elements, if any, of |tokens|.
+          7. Let |allowlist| be a new <a>allowlist</a>.
+          8. If any element of |targetlist| is the string "<code>*</code>", set
+            |allowlist| to <a>the special value <code>*</code></a>.
+          9. Otherwise:
+              1. Set |allowlist| to an new <a>ordered set</a>.
+              2. If |targetlist| is empty and |target origin| is given, append
+                |target origin| to |allowlist|.
+              3. For each |element| in |targetlist|:
+                  1. If |element| is an <a>ASCII case-insensitive</a> match for
+                    "<code>'self'</code>", let result be |container origin|.
+                  2. If |target origin| is given, and |element| is an <a>ASCII
+                    case-insensitive</a> match for "<code>'src'</code>", let
+                    result be |target origin|.
+                  3. Otherwise, let |result| be the result of executing the
+                    <a>URL parser</a> on |element|.
+                  4. If |result| is not failure:
+                      1. Let |target| be the origin of |result|.
+                      2. If |target| is not an opaque origin, append |target| to
+                        |allowlist|.
+          10. Set |directive|[|feature|] to |allowlist|.
+      3. Return |directive|.
   </section>
   <section>
     <h3 id="merge-directive-with-declared-policy">Merge directive with declared
     policy</h3>
-    <p>Given a policy directive (<var>directive</var>) and a declared policy
-    (<var>policy</var>), this algorithm will modify <var>policy</var> to
+    <p>Given a policy directive (|directive|) and a declared policy
+    (|policy|), this algorithm will modify |policy| to
     account for the new directive.</p>
-    <ol>
-      <li>For each <var>feature</var> → <var>allowlist</var> of
-      <var>directive</var>:
-        <ol>
-          <li>If <var>policy</var> does not contain an allowlist for
-          <var>feature</var>, then set <var>policy</var>[<var>feature</var>] to
-          <var>allowlist</var>.</li>
-        </ol>
-      </li>
-    </ol>
+      1. For each |feature| → |allowlist| of |directive|:
+          1. If |policy| does not contain an allowlist for |feature|, then set
+            |policy|[|feature|] to |allowlist|.
   </section>
   <section>
     <h3 id="process-feature-policy-attributes">Process feature policy
     attributes</h3>
-    <p>Given an element (<var>element</var>), this algorithm returns a
+    <p>Given an element (|element|), this algorithm returns a
     <a>container policy</a>, which may be empty.</p>
-    <ol>
-      <li>Let <var>policy</var> be a new <a>policy directive</a>.
-      </li>
-      <li>Let <var>container policy</var> be the result of running <a href=
-      "#parse-policy-directive">Parse policy directive</a> on the value of
-        <var>element</var>'s <code>allow</code> attribute, with <var>container
-        origin</var> set to the origin of <var>element</var>'s node document,
-        and <var>target origin</var> set to <var>element</var>'s <a>declared
-        origin</a>.
-      </li>
-      <li>If <var>element</var> is an <{iframe}> element:
-        <ol>
-          <li>If <var>element</var>'s <code>allowfullscreen</code> attribute is
-          specified, and <var>container policy</var> does not contain an
-          allowlist for <code>fullscreen</code>,
-            <ol>
-              <li>Construct a new declaration for <code>fullscreen</code>, whose
-              allowlist is <a>the special value <code>*</code></a>.</li>
-              <li>Add <var>declaration</var> to <var>container policy</var>.
-              </li>
-            </ol>
-          </li>
-          <li>If <var>element</var>'s <code>allowpaymentrequest</code>
-          attribute is specified, and <var>container policy</var> does not
-          contain an allowlist for <code>payment</code>,
-            <ol>
-              <li>Construct a new declaration for <code>payment</code>, whose
-              allowlist is <a>the special value <code>*</code></a>.</li>
-              <li>Add <var>declaration</var> to <var>container policy</var>.
-              </li>
-            </ol>
-          </li>
-        </ol>
-      </li>
-      <li>Return <var>container policy</var>.</li>
-    </ol>
+      1. Let |policy| be a new <a>policy directive</a>.
+      2. Let |container policy| be the result of running <a
+        href="#parse-policy-directive">Parse policy directive</a> on the value
+        of |element|'s <code>allow</code> attribute, with |container origin| set
+        to the origin of |element|'s node document, and |target origin| set to
+        |element|'s <a>declared origin</a>.
+      3. If |element| is an <{iframe}> element:
+          1. If |element|'s <code>allowfullscreen</code> attribute is specified,
+            and |container policy| does not contain an allowlist for
+            <code>fullscreen</code>,
+              1. Construct a new declaration for <code>fullscreen</code>, whose
+                allowlist is <a>the special value <code>*</code></a>.
+              2. Add |declaration| to |container policy|.
+          2. If |element|'s <code>allowpaymentrequest</code> attribute is
+            specified, and |container policy| does not contain an allowlist for
+            <code>payment</code>,
+              1. Construct a new declaration for <code>payment</code>, whose
+                allowlist is <a>the special value <code>*</code></a>.
+              2. Add |declaration| to |container policy|.
+      4. Return |container policy|.
   </section>
   <section>
-    <h3 id="initialize-for-document">Initialize <var>document</var>'s Feature
-    Policy</var></h3>
-    <p>Given a {{Document}} object (<var>document</var>), this algorithm
-    initialises <var>document</var>'s <a>Feature Policy</a></p>
-    <ol>
-      <li>Let <var>inherited policy</var> be a new ordered map.</li>
-      <li>Let <var>declared policy</var> be a new ordered map.</li>
-      <li>For each <var>feature</var> supported,
-        <ol>
-          <li>Let <var>isInherited</var> be the result of running <a href=
-          "#define-inherited-policy"></a> on <var>feature</var> and
-          <var>document</var>.
-          </li>
-          <li>Set <var>inherited policy</var>[<var>feature</var>] to
-            <var>isInherited</var>.</li>
-        </ol>
-      </li>
-      <li>Let <var>policy</var> be a new <a>feature policy</a>, with inherited
-      policy <var>inherited policy</var> and declared policy <var>declared
-      policy</var>.
-      </li>
-      <li>
-        <a>Enforce</a> the policy <var>policy</var> on <var>document</var>.
-      </li>
-    </ol>
+    <h3 id="initialize-for-document">Initialize |document|'s Feature Policy</h3>
+    <p>Given a {{Document}} object (|document|), this algorithm
+    initialises |document|'s <a>Feature Policy</a>.</p>
+      1. Let |inherited policy| be a new ordered map.
+      2. Let |declared policy| be a new ordered map.
+      3. For each |feature| supported,
+          1. Let |isInherited| be the result of running <a
+            href="#define-inherited-policy"></a> on |feature| and |document|.
+          2. Set |inherited policy|[|feature|] to |isInherited|.
+      4. Let |policy| be a new <a>feature policy</a>, with inherited policy
+        |inherited policy| and declared policy |declared policy|.
+      5. <a>Enforce</a> the policy |policy| on |document|.
   </section>
   <section>
-    <h3 id="initialize-from-response">Initialize <var>document</var>'s Feature
-    Policy from <var>response</var></h3>
-    <p>Given a [=response=] (<var>response</var>) and a <a>Document</a>
-    (<var>document</var>), this algorithm populates <var>document</var>'s
-    <a>Feature Policy</a></p>
-    <ol>
-      <li><a href="#initialize-for-document">Initialize <var>document</var>'s
-      Feature Policy</a></li>
-      <li>Let <var>inherited policy</var> be <var>document</var>'s Feature
-      Policy's <a>inherited policy</a>.</li>
-      <li>Let <var>declared policy</var> be a new ordered map.</li>
-      <li>Let <var>d</var> be the result of running <a
-      href="#process-response-policy">Process response policy</a> on
-      <var>response</var> and <var>document</var>'s origin.</li>
-      <li>For each <var>feature</var> → <var>allowlist</var> of <var>d</var>:
-        <ol>
-          <li>If <var>inherited policy</var>[<var>feature</var>] is true, then
-          set <var>declared policy</var>[<var>feature</var>] to
-          <var>allowlist</var>.</li>
-        </ol>
-      </li>
-      <li>Let <var>policy</var> be a new <a>feature policy</a>, with inherited
-      policy <var>inherited policy</var> and declared policy <var>declared
-      policy</var>.
-      </li>
-      <li>
-        <a>Enforce</a> the policy <var>policy</var> on <var>document</var>.
-      </li>
-    </ol>
+    <h3 id="initialize-from-response">Initialize |document|'s Feature
+    Policy from |response|</h3>
+    <p>Given a [=response=] (|response|) and a <a>Document</a>
+    (|document|), this algorithm populates |document|'s
+    <a>Feature Policy</a>.</p>
+      1. <a href="#initialize-for-document">Initialize |document|'s Feature
+        Policy</a>.
+      2. Let |inherited policy| be |document|'s Feature Policy's <a>inherited
+        policy</a>.
+      3. Let |declared policy| be a new ordered map.
+      4. Let |d| be the result of running <a
+        href="#process-response-policy">Process response policy</a> on
+        |response| and |document|'s origin.
+      5. For each |feature| → |allowlist| of |d|:
+          1. If |inherited policy|[|feature|] is true, then set
+            |declared policy|[|feature|] to |allowlist|.
+      6. Let |policy| be a new <a>feature policy</a>, with inherited policy
+        |inherited policy| and declared policy |declared policy|.
+      7. <a>Enforce</a> the policy |policy| on |document|.
   </section>
   <section>
     <h3 id="define-inherited-policy">Define an inherited policy for
-    <var>feature</var> in <var>document</var></h3>
-    <p>Given a feature (<var>feature</var>) and a <a>Document</a>
-    (<var>document</var>), this algorithm returns the <a>inherited policy</a>
+    |feature| in |document|</h3>
+    <p>Given a feature (|feature|) and a <a>Document</a>
+    (|document|), this algorithm returns the <a>inherited policy</a>
     for that feature.</p>
-    <ol>
-      <li>Let <var>context</var> be <var>document</var>'s <a>browsing
-      context</a>.</li>
-      <li>If <var>context</var> is a [=nested browsing context=], return the
-        result of executing <a href="#define-inherited-policy-in-container"></a>
-        for <var>feature</var> in <var>context</var>'s <a>browsing context
-	container</a> at <var>document</var>'s <a>origin</a>.</li>
-      <li>Otherwise, return "<code>Enabled</code>".</li>
-    </ol>
+      1. Let |context| be |document|'s <a>browsing context</a>.
+      2. If |context| is a [=nested browsing context=], return the result of
+        executing <a href="#define-inherited-policy-in-container"></a> for
+        |feature| in |context|'s <a>browsing context container</a> at
+        |document|'s <a>origin</a>.
+      3. Otherwise, return "<code>Enabled</code>".
   </section>
   <section>
     <h3 id="define-inherited-policy-in-container">Define an inherited policy for
-    <var>feature</var> in <var>container</var> at <var>origin</var></h3>
-    <p>Given a feature (<var>feature</var>) a <a>browsing context container</a>
-    (<var>container</var>), and an <a>origin</a> for a document in that
-    container (<var>origin</var>), this algorithm returns the <a>inherited
+    |feature| in |container| at |origin|</h3>
+    <p>Given a feature (|feature|) a <a>browsing context container</a>
+    (|container|), and an <a>origin</a> for a document in that
+    container (|origin|), this algorithm returns the <a>inherited
     policy</a> for that feature.</p>
-    <ol>
-      <li>Let <var>parent</var> be <var>container</var>'s <a>node
-        document</a>.</li>
-      <li>Let <var>container policy</var> be the result of running
-        <a href="#process-feature-policy-attributes"></a> on
-        <var>container</var>.
-      </li>
-      <li>If <var>feature</var> is a key in <var>container policy</var>:
-        <ol>
-          <li>If the <a>allowlist</a> for <var>feature</var> in
-          <var>container policy</var> does not <a>match</a> <var>origin</var>,
-          return "<code>Disabled</code>".
-          </li>
-          <li>If <a href="#is-feature-enabled"><var>feature</var> is enabled in
-          <var>parent</var> for <var>parent</var>'s <var>origin</var></a>,
-          return "<code>Enabled</code>".
-          </li>
-        </ol>
-      </li>
-      <li>If <a href="#is-feature-enabled"><var>feature</var> is
-      enabled in <var>parent</var> for <var>origin</var></a>, return
-      "<code>Enabled</code>".
-      </li>
-      <li>Otherwise return "<code>Disabled</code>".</li>
-    </ol>
+      1. Let |parent| be |container|'s <a>node document</a>.
+      2. Let |container policy| be the result of running <a
+        href="#process-feature-policy-attributes"></a> on |container|.
+      3. If |feature| is a key in |container policy|:
+          1. If the <a>allowlist</a> for |feature| in |container policy| does
+            not <a>match</a> |origin|, return "<code>Disabled</code>".
+          2. If <a href="#is-feature-enabled">|feature| is enabled in |parent|
+            for |parent|'s |origin|</a>, return "<code>Enabled</code>".
+      4. If <a href="#is-feature-enabled">|feature| is enabled in |parent| for
+        |origin|</a>, return "<code>Enabled</code>".
+      5. Otherwise return "<code>Disabled</code>".
   </section>
   <section>
-    <h3 id="is-feature-enabled">Is <var>feature</var> enabled in
-    <var>document</var> for <var>origin</var>?</h3>
-    <p>Given a feature (<var>feature</var>), a {{Document}} object
-    (<var>document</var>), and an [=origin=] (<var>origin</var>), this algorithm
-    returns "<code>Disabled</code>" if <var>feature</var> should be considered
+    <h3 id="is-feature-enabled">Is |feature| enabled in |document| for
+    |origin|?</h3>
+    <p>Given a feature (|feature|), a {{Document}} object
+    (|document|), and an [=origin=] (|origin|), this algorithm
+    returns "<code>Disabled</code>" if |feature| should be considered
     disabled, and "<code>Enabled</code>" otherwise.</p>
-    <ol>
-      <li>Let <var>policy</var> be <var>document</var>'s <a>Feature Policy</a>
-      </li>
-      <li>If <var>policy</var>'s <a>inherited policy</a> for <var>feature</var>
-      is Disabled, return "<code>Disabled</code>".</li>
-      <li>If <var>feature</var> is present in <var>policy</var>'s <a>declared
-      policy</a>:
-        <ol>
-          <li>If the <a>allowlist</a> for <var>feature</var> in
-          <var>policy</var>'s <a>declared policy</a> <a>matches</a>
-          <var>origin</var>, then return "<code>Enabled</code>".
-          </li>
-          <li>Otherwise return "<code>Disabled</code>".</li>
-        </ol>
-      </li>
-      <li>If <var>feature</var>'s <a>default allowlist</a> is
-      <code>*</code>, return "<code>Enabled</code>".
-      </li>
-      <li>If <var>feature</var>'s <a>default allowlist</a> is
-      <code>'self'</code>, and <var>origin</var> is [=same origin-domain=]
-      with <var>document</var>'s origin, return "<code>Enabled</code>".
-      </li>
-      <li>Return "<code>Disabled</code>".</li>
-    </ol>
+      1. Let |policy| be |document|'s <a>Feature Policy</a>.
+      2. If |policy|'s <a>inherited policy</a> for |feature| is Disabled, return
+        "<code>Disabled</code>".
+      3. If |feature| is present in |policy|'s <a>declared policy</a>:
+          1. If the <a>allowlist</a> for |feature| in |policy|'s <a>declared
+            policy</a> <a>matches</a> |origin|, then return
+            "<code>Enabled</code>".
+          2. Otherwise return "<code>Disabled</code>".
+      4. If |feature|'s <a>default allowlist</a> is <code>*</code>, return
+        "<code>Enabled</code>".
+      5. If |feature|'s <a>default allowlist</a> is <code>'self'</code>, and
+        |origin| is [=same origin-domain=] with |document|'s origin, return
+        "<code>Enabled</code>".
+      6. Return "<code>Disabled</code>".
   </section>
   <section>
     <h3 id="report-feature-policy-violation" export>Generate report for

@@ -164,10 +164,6 @@ spec:reporting; urlPrefix: https://w3c.github.io/reporting/
     of features and feature policies in Workers and Worklets as well.</div>
     <p><a>Policy-controlled features</a> are identified by tokens, which are
     character strings used in <a>policy directives</a>.
-    <p>Each <a>policy-controlled feature</a> has a <a>default allowlist</a>,
-    which defines whether that feature is available in documents in top-level
-    browsing contexts, and how access to that feature is inherited in child
-    browsing contexts.</p>
     <p>A user agent has a set of <dfn>supported features</dfn>, which is the set
     of <a data-lt="policy-controlled feature">features</a> which it allows to be
     controlled through policies. User agents are not required to support every
@@ -213,7 +209,7 @@ spec:reporting; urlPrefix: https://w3c.github.io/reporting/
     in the document.
     </p>
     <p>In a {{Document}} in a [=top-level browsing context=], the inherited
-    policy is based on defined defaults for each feature.</p>
+    policy is "<code>Enabled</code> for each supported feature.</p>
     <p>In a {{Document}} in a [=child browsing context=], the inherited policy
     is based on the parent document's feature policy, as well as the [=child
     browsing context=]'s <a>container policy</a>.
@@ -290,32 +286,6 @@ spec:reporting; urlPrefix: https://w3c.github.io/reporting/
       </li>
       <li>return false.</li>
     </ol>
-  </section>
-  <section>
-    <h3 id="default-allowlists">Default Allowlists</h3>
-    <p>Every <a>policy-controlled feature</a> has a <dfn export lt=
-    "default allowlist|default allowlists">default allowlist</dfn>. The
-    <a>default allowlist</a> determines whether the feature is allowed in a
-    document with no declared policy in a top-level browsing context, and also
-    whether access to the feature is automatically delegated to documents in
-    child browsing contexts.</p>
-    <p>The <a>default allowlist</a> for a <a
-    data-lt="policy-controlled feature">feature</a> is one of these values:</p>
-    <dl>
-      <dt><code>*</code></dt>
-      <dd>The feature is allowed in documents in top-level browsing contexts by
-      default, and when allowed, is allowed by default to documents in child
-      browsing contexts.</dd>
-      <dt><code>'self'</code></dt>
-      <dd>The feature is allowed in documents in top-level browsing contexts by
-      default, and when allowed, is allowed by default to same-origin domain
-      documents in child browsing contexts, but is disallowed by default in
-      cross-origin documents in child browsing contexts.</dd>
-      <dt>'none'</dt>
-      <dd>The feature is disallowed in documents in top-level browsing contexts
-      by default, and is also disallowed by default to documents in child
-      browsing contexts.</dd>
-    </dl>
   </section>
 </section>
 <section>
@@ -1006,12 +976,8 @@ partial interface HTMLIFrameElement {
           <li>Otherwise return "<code>Disabled</code>".</li>
         </ol>
       </li>
-      <li>If <var>feature</var>'s <a>default allowlist</a> is
-      <code>*</code>, return "<code>Enabled</code>".
-      </li>
-      <li>If <var>feature</var>'s <a>default allowlist</a> is
-      <code>'self'</code>, and <var>origin</var> is [=same origin=] with
-      <var>document</var>'s origin, return "<code>Enabled</code>".
+      <li>If <var>origin</var> is [=same origin=] with <var>document</var>'s
+      origin, return "<code>Enabled</code>".
       </li>
       <li>Return "<code>Disabled</code>".</li>
     </ol>
